@@ -73,6 +73,8 @@ function getPathName(pathSlug: string | undefined) {
 	switch (pathSlug) {
 		case "dashboard":
 			return "Dashboard";
+		case "links":
+			return "Links";
 		default:
 			return pathSlug?.replace("-", " ").toUpperCase() ?? "";
 	}
