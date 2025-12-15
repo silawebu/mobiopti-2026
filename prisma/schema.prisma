@@ -13,6 +13,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UrlTestStatus {
+  ok
+  warning
+  critical 
+}
+
 model User {
   id            String    @id
   name          String
@@ -29,6 +35,8 @@ model User {
   banReason        String?
   banExpires       DateTime?
   stripeCustomerId String?
+
+  urls Url[]
 
   @@unique([email])
   @@map("user")
@@ -99,4 +107,58 @@ model Subscription {
   seats                Int?
 
   @@map("subscription")
+}
+
+model TestCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  tests       Test[]
+
+  @@map("test_category")
+}
+
+model Test {
+  id          String    @id
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String    @unique
+  description String?
+  isPaid      Boolean
+  categoryId  Int
+  category    TestCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  maxPoints   Int
+  severity    Int
+  urlTests    UrlTest[]
+
+  @@map("test")
+}
+
+model Url {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  url       String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  urlTests  UrlTest[]
+
+  @@unique([userId, url])
+  @@index([userId])
+  @@map("url")
+}
+
+model UrlTest {
+  createdAt DateTime
+  urlId     String
+  url       Url           @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  testId    String
+  test      Test          @relation(fields: [testId], references: [id])
+  status    UrlTestStatus
+  message   String?
+  content   String?
+
+  @@id([createdAt, urlId, testId])
+  @@index([urlId])
+  @@index([testId])
+  @@map("url_test")
 }
