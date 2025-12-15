@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { authClient, getErrorMessage } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type Props = {
@@ -11,10 +13,27 @@ type Props = {
 };
 
 export default function GoogleAuth({ loading, setLoading, redirectTo }: Props) {
-	const handleGoogleAuth = (e: React.MouseEvent<HTMLButtonElement>) => {
+	const router = useRouter();
+
+	const handleGoogleAuth = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
-		toast.info("Hasn't been implemented yet");
+		setLoading(true);
+
+		await authClient.signIn.social({
+			provider: "google",
+			callbackURL: redirectTo ?? "/dashboard",
+			fetchOptions: {
+				onError: (error) => {
+					console.error(error);
+					toast.error(
+						getErrorMessage(error.error.code) ??
+							"Přihlášení se nezdařilo. Zkuste to znovu."
+					);
+					setLoading(false);
+				},
+			},
+		});
 	};
 
 	return (
