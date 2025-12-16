@@ -43,9 +43,14 @@ export default function UrlSlotCard({ index, slot }: Props) {
 				<div className="flex flex-col gap-1 min-w-0 flex-1 mr-4">
 					<div className="flex items-center gap-2">
 						<Link2 className="w-4 h-4 text-foreground/75 shrink-0 hidden sm:block" />
-						<span className="text-sm sm:text-base lg:text-lg font-bold text-foreground truncate">
-							{slot.url}
-						</span>
+						<p className="text-sm sm:text-base lg:text-lg font-bold text-foreground truncate">
+							<span className="font-normal text-foreground/75">
+								{slot.url.includes("http://") ? "http://" : "https://"}
+							</span>
+							{slot.url.includes("http://")
+								? slot.url.replace("http://", "")
+								: slot.url.replace("https://", "")}
+						</p>
 					</div>
 					<span className="text-xs text-foreground/75 sm:pl-6">
 						{format(slot.createdAt, "MMM d, yyyy 'at' HH:mm")}
