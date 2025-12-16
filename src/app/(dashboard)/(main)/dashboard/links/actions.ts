@@ -11,10 +11,10 @@ import { hasFeature } from "@/utils/subscription";
 import prisma from "@/lib/prisma";
 import { tryCatch } from "@/utils/try-catch";
 import { MAXIMUM_PROJECTS } from "@/lib/settings";
-import { isValidPageUrl } from "@/utils/link/validator";
-import { ERROR_MESSAGES } from "@/utils/link/error-messages";
+import { isValidPageUrl } from "@/utils/url/validator";
+import { ERROR_MESSAGES } from "@/utils/url/error-messages";
 import axios, { type AxiosResponse } from "axios";
-import { fetchPage } from "@/utils/link/fetcher";
+import { fetchPage } from "@/utils/url/fetcher";
 import { Prisma } from "@/generated/prisma/client";
 import { evaluateTests, calculateScore } from "@/lib/tests";
 import { revalidatePath } from "next/cache";
@@ -161,7 +161,7 @@ export async function addLink(values: z.infer<typeof linkFormSchema>) {
 	);
 
 	if (scoreError) {
-		await redis.set(`mobiopti:linkscore:${newProject.id}`, "Error");
+		await redis.set(`mobiopti:linkscore:${newProject.id}`, "error");
 	} else {
 		await redis.set(`mobiopti:linkscore:${newProject.id}`, score.toString());
 	}
