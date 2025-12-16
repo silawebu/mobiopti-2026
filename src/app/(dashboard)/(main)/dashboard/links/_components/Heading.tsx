@@ -1,8 +1,11 @@
 import { Link2 } from "lucide-react";
 import AddLink from "./AddLink";
 
+type Props = {
+	actionDisabled?: boolean;
+};
 
-export default function Heading() {
+export default function Heading({ actionDisabled = false }: Props) {
 	return (
 		<section className="w-full flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
 			<div className="flex items-center gap-3">
@@ -13,7 +16,7 @@ export default function Heading() {
 					Your links
 				</h1>
 			</div>
-			<AddLink />
+			{!actionDisabled && <AddLink />}
 		</section>
 	);
 }
