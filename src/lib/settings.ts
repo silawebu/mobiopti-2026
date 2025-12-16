@@ -1,0 +1,1 @@
+export const MAXIMUM_PROJECTS: number = 5;

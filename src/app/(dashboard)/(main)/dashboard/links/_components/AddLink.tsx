@@ -23,8 +23,10 @@ import { Button } from "@/components/ui/button";
 import { Controller, useForm } from "react-hook-form";
 import { Plus } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { addLink } from "../actions";
+import { toast } from "sonner";
 
-export const projectFormSchema = z.object({
+export const linkFormSchema = z.object({
 	url: z
 		.string()
 		.min(4, "URL is not valid")
@@ -38,17 +40,29 @@ export default function AddLink() {
 	const [open, setOpen] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
-	const form = useForm<z.infer<typeof projectFormSchema>>({
-		resolver: zodResolver(projectFormSchema),
+	const form = useForm<z.infer<typeof linkFormSchema>>({
+		resolver: zodResolver(linkFormSchema),
 		defaultValues: {
 			url: "",
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof projectFormSchema>) {
-      setIsLoading(true);
-      
-		console.log(data);
+	async function onSubmit(data: z.infer<typeof linkFormSchema>) {
+		setIsLoading(true);
+
+		const { error } = await addLink(data);
+
+		if (error) {
+			toast.error("Something went wrong", { description: error });
+			if (error.includes("succefully added")) {
+				setOpen(false);
+			}
+		} else {
+			setOpen(false);
+			form.reset();
+		}
+
+		setIsLoading(false);
 	}
 
 	return (
@@ -72,7 +86,7 @@ export default function AddLink() {
 					<FieldGroup>
 						<Controller
 							name="url"
-                     disabled={isLoading}
+							disabled={isLoading}
 							control={form.control}
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
