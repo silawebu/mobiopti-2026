@@ -1,11 +1,11 @@
 export const PLANS = {
 	free: {
 		name: "Free",
-		features: ["basic_access"],
+		features: ["add_link"],
 	},
 	premium: {
 		name: "Premium",
-		features: ["basic_access", "advanced_features"],
+		features: ["add_link", "paid_tests"],
 	},
 } as const;
 
