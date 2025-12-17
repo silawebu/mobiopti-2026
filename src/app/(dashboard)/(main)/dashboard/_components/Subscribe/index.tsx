@@ -10,7 +10,7 @@ export default function Subscribe() {
 			<span className="pt-2 pb-5">
 				If you want full access to MobiOpti <b>SUBSCRIBE NOW!</b>
 			</span>
-			<SubscribeButton />
+			<SubscribeButton button={{ size: "lg", label: "Get Access" }} />
 		</div>
 	);
 }
