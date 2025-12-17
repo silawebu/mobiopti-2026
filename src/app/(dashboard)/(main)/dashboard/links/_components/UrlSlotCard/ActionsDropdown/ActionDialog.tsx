@@ -15,17 +15,22 @@ import { Button } from "@/components/ui/button";
 import { UrlWithScore } from "@/utils/append-scores";
 import { Repeat, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { deleteLink } from "../../../actions";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 type Props = {
 	type: "delete" | "rerun";
 	children: React.ReactNode;
 	linkName: UrlWithScore["url"];
+	urlId: UrlWithScore["id"];
 	closeDropdown: () => void;
 };
 
 export default function ActionDialog({
 	type,
 	children,
+	urlId,
 	linkName,
 	closeDropdown,
 }: Props) {
@@ -39,10 +44,17 @@ export default function ActionDialog({
 
 		setLoading(true);
 
-		console.log("Deleting...");
+		const { error } = await deleteLink(urlId);
 
-		setOpen(false);
-		closeDropdown();
+		if (error) {
+			toast.error(error);
+		} else {
+			toast.success("Link was successfully deleted");
+			setOpen(false);
+			closeDropdown();
+		}
+
+		setLoading(false);
 	}
 
 	async function handleRerun(
@@ -108,7 +120,7 @@ export default function ActionDialog({
 								onClick={handleDelete}
 								variant={"destructive"}
 							>
-								<Trash2 />
+								{loading ? <Spinner /> : <Trash2 />}
 								Delete
 							</Button>
 						</AlertDialogAction>
@@ -116,7 +128,7 @@ export default function ActionDialog({
 					{type === "rerun" && (
 						<AlertDialogAction disabled={loading} asChild>
 							<Button disabled={loading} onClick={handleRerun}>
-								<Repeat />
+								{loading ? <Spinner /> : <Repeat />}
 								Re-run tests
 							</Button>
 						</AlertDialogAction>

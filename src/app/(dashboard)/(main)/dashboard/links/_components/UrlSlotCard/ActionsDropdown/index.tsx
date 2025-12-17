@@ -46,6 +46,7 @@ export default function ActionDropdown({ score, urlId, linkName }: Props) {
 						</DropdownMenuItem>
 					</Link>
 					<ActionDialog
+						urlId={urlId}
 						linkName={linkName}
 						type="rerun"
 						closeDropdown={() => setOpen(false)}
@@ -57,6 +58,7 @@ export default function ActionDropdown({ score, urlId, linkName }: Props) {
 					</ActionDialog>
 					<DropdownMenuSeparator />
 					<ActionDialog
+						urlId={urlId}
 						linkName={linkName}
 						type="delete"
 						closeDropdown={() => setOpen(false)}

@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { linkFormSchema } from "./_components/AddLink";
+import { linkFormSchema } from "./_components/NewLinkDialog";
 import { getIp } from "@/utils/get-ip";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -25,6 +25,12 @@ const rateLimit = new Ratelimit({
 	redis: redis,
 	limiter: Ratelimit.slidingWindow(3, "10 s"),
 	prefix: "mobiopti:addlink",
+});
+
+const delRateLimit = new Ratelimit({
+	redis: redis,
+	limiter: Ratelimit.slidingWindow(5, "60 s"),
+	prefix: "mobiopti:deletelink",
 });
 
 export async function addLink(values: z.infer<typeof linkFormSchema>) {
@@ -178,6 +184,76 @@ export async function addLink(values: z.infer<typeof linkFormSchema>) {
 				"Link was succefully added but the initial tests failed while saving to the databse. Try again from the dashboard!",
 		};
 	}
+
+	revalidatePath("/dashboard/links");
+
+	return {
+		error: null,
+	};
+}
+
+export async function deleteLink(urlId: string) {
+	const isDev = process.env.NODE_ENV === "development";
+
+	const rawIp = await getIp();
+	const ip = rawIp ?? (isDev ? "127.0.0.1" : null);
+
+	if (!ip) {
+		return {
+			error: "Unable to verify the source of the request",
+		};
+	}
+
+	const { success } = await delRateLimit.limit(ip);
+
+	if (!success) {
+		return {
+			error: "Slow down! You can delete only couple of links after each other",
+		};
+	}
+
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (!session) {
+		return { error: "Only authenticated users can delete a link" };
+	}
+
+	const linkExists = await tryCatch(
+		prisma.url.findUnique({
+			where: {
+				id: urlId,
+				userId: session.user.id,
+			},
+		})
+	);
+
+	if (linkExists.error) {
+		console.error(linkExists.error);
+		return {
+			error: "Failed to check if the link exists",
+		};
+	}
+
+	if (linkExists.data == null) {
+		return {
+			error: "Link you want to delete does not exist",
+		};
+	}
+
+	const { error: deleteLink } = await tryCatch(
+		prisma.url.delete({ where: { id: urlId, userId: session.user.id } })
+	);
+
+	if (deleteLink) {
+		console.error(deleteLink);
+		return {
+			error: "Failed to delete the link",
+		};
+	}
+
+	await redis.del(`mobiopti:linkscore:${urlId}`);
 
 	revalidatePath("/dashboard/links");
 
