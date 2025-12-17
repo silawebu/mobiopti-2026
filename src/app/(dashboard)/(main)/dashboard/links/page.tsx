@@ -20,7 +20,10 @@ export default async function LinksPage() {
 	}
 
 	const { data, error } = await tryCatch(
-		prisma.url.findMany({ where: { userId: session.user.id } })
+		prisma.url.findMany({
+			where: { userId: session.user.id },
+			orderBy: { createdAt: "asc" },
+		})
 	);
 
 	if (error) {
