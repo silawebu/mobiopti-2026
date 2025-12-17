@@ -15,7 +15,7 @@ type Props = {
 };
 
 const slotVariants = cva(
-	"w-full border-double p-4 h-24 relative mt-4 border-x-2 border-b-2 rounded-xl rounded-t-none hover:opacity-80 duration-150 shadow-xl",
+	"w-full border-double p-4 h-[85px] relative mt-[25px] border-x-2 border-b-2 rounded-xl rounded-t-none hover:opacity-80 duration-150 shadow-xl",
 	{
 		variants: {
 			variant: {
@@ -39,7 +39,7 @@ export default function UrlSlotCard({ index, slot }: Props) {
 			className={cn(slotVariants(scoreStyle(slot.score)))}
 		>
 			<ScoreDisplay score={slot.score} />
-			<div className="h-full w-full pt-2 flex items-center justify-between gap-3">
+			<div className="h-full w-full flex items-center justify-between gap-3">
 				<div className="flex flex-col gap-1 min-w-0 flex-1 mr-4">
 					<div className="flex items-center gap-2">
 						<Link2 className="w-4 h-4 text-foreground/75 shrink-0 hidden sm:block" />

@@ -56,7 +56,7 @@ export default function ScoreDisplay({ score }: Props) {
 		return (
 			<div
 				className={clsx(
-					"h-7 w-[calc(100%+4px)] overflow-hidden z-50 absolute -left-[2px] border-double rounded-t-xl -top-5 border-x-2 border-t-2",
+					"h-[25px] w-[calc(100%+4px)] overflow-hidden z-50 absolute -left-[2px] border-double rounded-t-xl top-[-25px] border-x-2 border-t-2",
 					bg
 				)}
 			>
