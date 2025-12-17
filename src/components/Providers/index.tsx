@@ -14,7 +14,7 @@ export default function Providers({ children }: Props) {
 			disableTransitionOnChange
 		>
 			{children}
-			<Toaster position="top-center" />
+			<Toaster position="top-right" />
 		</ThemeProvider>
 	);
 }
