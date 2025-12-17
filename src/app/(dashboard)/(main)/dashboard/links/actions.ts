@@ -33,6 +33,12 @@ const delRateLimit = new Ratelimit({
 	prefix: "mobiopti:deletelink",
 });
 
+const rerunRateLimit = new Ratelimit({
+	redis: redis,
+	limiter: Ratelimit.slidingWindow(5, "60 s"),
+	prefix: "mobiopti:rerunlink",
+});
+
 export async function addLink(values: z.infer<typeof linkFormSchema>) {
 	const isDev = process.env.NODE_ENV === "development";
 
@@ -254,6 +260,125 @@ export async function deleteLink(urlId: string) {
 	}
 
 	await redis.del(`mobiopti:linkscore:${urlId}`);
+
+	revalidatePath("/dashboard/links");
+
+	return {
+		error: null,
+	};
+}
+
+export async function rerunTests(urlId: string) {
+	const isDev = process.env.NODE_ENV === "development";
+
+	const rawIp = await getIp();
+	const ip = rawIp ?? (isDev ? "127.0.0.1" : null);
+
+	if (!ip) {
+		return {
+			error: "Unable to verify the source of the request",
+		};
+	}
+
+	const { success } = await rerunRateLimit.limit(ip);
+
+	if (!success) {
+		return {
+			error: "Slow down! You can only re-run the tests a few times in a row",
+		};
+	}
+
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (!session) {
+		return { error: "Only authenticated users can re-run tests" };
+	}
+
+	const linkExists = await tryCatch(
+		prisma.url.findUnique({
+			where: {
+				id: urlId,
+				userId: session.user.id,
+			},
+		})
+	);
+
+	if (linkExists.error) {
+		console.error(linkExists.error);
+		return {
+			error: "Failed to check if the link exists",
+		};
+	}
+
+	if (linkExists.data == null) {
+		return {
+			error: "Link you want to re-run tests for does not exist",
+		};
+	}
+
+	const { id, url } = linkExists.data;
+
+	let html: null | string = null;
+
+	let urlRequest: AxiosResponse;
+
+	try {
+		urlRequest = await fetchPage(url);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			const key = err.code ?? err.response?.status?.toString();
+			const message = ERROR_MESSAGES[key ?? ""] ?? ERROR_MESSAGES.default;
+			return { error: message };
+		}
+		return { error: ERROR_MESSAGES.default };
+	}
+
+	if (!urlRequest?.data || !urlRequest.request.res.responseUrl) {
+		return {
+			error: "Failed to retrieve link data",
+		};
+	}
+
+	html = urlRequest.data;
+
+	if (!html) {
+		return {
+			error: "Could not load the website HTML content",
+		};
+	}
+
+	const { data: tests, error: testsErr } = await tryCatch(
+		evaluateTests(html, id)
+	);
+
+	if (testsErr) {
+		return {
+			error: "Tests failed to execute. Try again later!",
+		};
+	}
+
+	const { data: score, error: scoreError } = await tryCatch(
+		calculateScore(tests)
+	);
+
+	if (scoreError) {
+		await redis.set(`mobiopti:linkscore:${id}`, "error");
+	} else {
+		await redis.set(`mobiopti:linkscore:${id}`, score.toString());
+	}
+
+	const { error: insertError } = await tryCatch(
+		prisma.urlTest.createMany({ data: tests })
+	);
+
+	if (insertError) {
+		console.error(insertError);
+		return {
+			error: "Failed to save the new tests to the databse. Try again later!",
+		};
+	}
 
 	revalidatePath("/dashboard/links");
 

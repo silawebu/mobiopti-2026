@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { UrlWithScore } from "@/utils/append-scores";
 import { Repeat, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { deleteLink } from "../../../actions";
+import { deleteLink, rerunTests } from "../../../actions";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -64,10 +64,17 @@ export default function ActionDialog({
 
 		setLoading(true);
 
-		console.log("Re-running...");
+		const { error } = await rerunTests(urlId);
 
-		setOpen(false);
-		closeDropdown();
+		if (error) {
+			toast.error(error);
+		} else {
+			toast.success("The tests were successful. Check out the results!");
+			setOpen(false);
+			closeDropdown();
+		}
+
+		setLoading(false);
 	}
 
 	return (
