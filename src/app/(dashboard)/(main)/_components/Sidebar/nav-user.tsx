@@ -42,7 +42,7 @@ export function NavUser({ user }: { user: User }) {
 					router.push("/");
 				},
 				onError: () => {
-					toast.error("Něco se pokazilo! Nepodařilo se odhlásit");
+					toast.error("Something went wrong while logging out");
 				},
 			},
 		});
@@ -92,10 +92,10 @@ export function NavUser({ user }: { user: User }) {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<Link href={"/ucet"}>
+							<Link href={"/dashboard/account"}>
 								<DropdownMenuItem className="cursor-pointer">
 									<UserIcon className="w-5" />
-									Účet
+									Account
 								</DropdownMenuItem>
 							</Link>
 						</DropdownMenuGroup>
@@ -111,7 +111,7 @@ export function NavUser({ user }: { user: User }) {
 								) : (
 									<LogOut className="w-5" />
 								)}
-								Odhlásit se
+								Log Out
 							</button>
 						</DropdownMenuItem>
 					</DropdownMenuContent>
