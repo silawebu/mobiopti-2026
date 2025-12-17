@@ -7,6 +7,8 @@ import ExpectedError from "@/components/ExpectedError";
 import PageLayout from "./_components/PageLayout";
 import { appendScores, type UrlWithScore } from "@/utils/append-scores";
 import UrlSlotCard from "./_components/UrlSlotCard";
+import { SubscriptionBanner } from "./_components/SubscribeBanner";
+import { hasFeature } from "@/utils/subscription";
 
 export type LinkSlot = UrlWithScore | null;
 
@@ -18,6 +20,8 @@ export default async function LinksPage() {
 	if (!session) {
 		redirect(`/login?redirect=${encodeURIComponent("/dashboard/links")}`);
 	}
+
+	const isSubscribed: boolean = await hasFeature(session.user.id, "paid_tests");
 
 	const { data, error } = await tryCatch(
 		prisma.url.findMany({
@@ -58,14 +62,21 @@ export default async function LinksPage() {
 
 	return (
 		<PageLayout actionDisabled={data.length >= 5}>
-			<div className="flex flex-col gap-4 md:gap-6">
-				{links.slice(0, 5).map((slot, index) => (
-					<UrlSlotCard
-						key={slot?.id ?? `empty-${index}`}
-						slot={slot}
-						index={index}
-					/>
-				))}
+			<div className="flex flex-col">
+				{!isSubscribed && (
+					<section>
+						<SubscriptionBanner />
+					</section>
+				)}
+				<section className="flex flex-col gap-4 md:gap-6">
+					{links.slice(0, 5).map((slot, index) => (
+						<UrlSlotCard
+							key={slot?.id ?? `empty-${index}`}
+							slot={slot}
+							index={index}
+						/>
+					))}
+				</section>
 			</div>
 		</PageLayout>
 	);
