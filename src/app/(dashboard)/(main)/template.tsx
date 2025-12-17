@@ -13,7 +13,7 @@ export default async function MainTemplate({
 	});
 
 	if (!session) {
-		return redirect("/prihlasit");
+		return redirect("/login");
 	}
 
 	return (
