@@ -1,5 +1,7 @@
 "use client";
 
+import type { UrlWithScore } from "@/utils/link-score";
+
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -12,7 +14,6 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { UrlWithScore } from "@/utils/append-scores";
 import { Repeat, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { deleteLink, rerunTests } from "../../../actions";

@@ -1,7 +1,8 @@
 "use client";
 
+import type { UrlWithScore } from "@/utils/link-score";
+
 import { Button } from "@/components/ui/button";
-import { UrlWithScore } from "@/utils/append-scores";
 import { EllipsisVertical, ExternalLink, Repeat, Trash2 } from "lucide-react";
 import {
 	DropdownMenu,

@@ -5,7 +5,7 @@ import { tryCatch } from "@/utils/try-catch";
 import prisma from "@/lib/prisma";
 import ExpectedError from "@/components/ExpectedError";
 import PageLayout from "./_components/PageLayout";
-import { appendScores, type UrlWithScore } from "@/utils/append-scores";
+import { appendScores, type UrlWithScore } from "@/utils/link-score";
 import UrlSlotCard from "./_components/UrlSlotCard";
 import { SubscriptionBanner } from "./_components/SubscribeBanner";
 import { hasFeature } from "@/utils/subscription";

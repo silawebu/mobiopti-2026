@@ -1,6 +1,6 @@
-import { getScoreColor } from "@/lib/settings";
-import type { UrlWithScore } from "@/utils/append-scores";
+import type { UrlWithScore } from "@/utils/link-score";
 
+import { getScoreColor } from "@/lib/settings";
 import clsx from "clsx";
 import { TriangleAlert } from "lucide-react";
 
@@ -23,7 +23,9 @@ export default function ScoreDisplay({ score }: Props) {
 					className={clsx(fill, "h-full rounded-tl-xl relative")}
 					style={{ width: `${score}%` }}
 				>
-					<span className="text-background/90 font-black text-sm absolute w-full h-full flex items-center justify-end px-2">{score}%</span>
+					<span className="text-background/90 font-black text-sm absolute w-full h-full flex items-center justify-end px-2">
+						{score}%
+					</span>
 				</div>
 			</div>
 		);

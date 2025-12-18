@@ -1,7 +1,8 @@
+import type { UrlWithScore } from "@/utils/link-score";
+
 import { cva, type VariantProps } from "class-variance-authority";
 import EmptySlot from "./EmptySlot";
 import { cn } from "@/lib/utils";
-import { UrlWithScore } from "@/utils/append-scores";
 import Link from "next/link";
 import ScoreDisplay from "./ScoreDisplay";
 import { Link2 } from "lucide-react";
