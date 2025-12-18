@@ -6,6 +6,7 @@ import { tryCatch } from "@/utils/try-catch";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import Details from "./_components/Details";
+import { getLinkScore } from "@/utils/link-score";
 
 type Props = {
 	params: Promise<{ linkId: string }>;
@@ -51,11 +52,13 @@ export default async function LinkDetailPage({ params }: Props) {
 		notFound();
 	}
 
+	const score = await getLinkScore(linkId);
+
 	const isSubscribed: boolean = await hasFeature(session.user.id, "paid_tests");
 
 	return (
 		<div>
-			<pre>{JSON.stringify(link, null, 2)}</pre>
+			<Details {...link} score={score} />
 		</div>
 	);
 }
