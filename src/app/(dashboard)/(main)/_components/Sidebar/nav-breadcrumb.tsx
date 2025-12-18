@@ -18,6 +18,8 @@ export type BreadcrumbSegment = {
 
 const UNCLICKABLE_SLUGS = [""];
 
+const CUID_PATTERN = /^c[a-z0-9]{20,30}$/;
+
 export default function SidebarBreadcrumb() {
 	const pathNames = getBreadcrumbSegments(usePathname(), UNCLICKABLE_SLUGS);
 
@@ -25,7 +27,7 @@ export default function SidebarBreadcrumb() {
 		<Breadcrumb>
 			<BreadcrumbList>
 				<BreadcrumbItem className="hidden md:block">
-					<BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+					<BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
 				</BreadcrumbItem>
 				{pathNames.map((pathName: BreadcrumbSegment, index: number) => (
 					<Fragment key={index}>
@@ -55,7 +57,7 @@ function getBreadcrumbSegments(
 	const segments = path.split("/").filter((s) => s && s !== "dashboard");
 	const items: BreadcrumbSegment[] = [];
 
-	let href = "";
+	let href = "/dashboard";
 
 	for (const segment of segments) {
 		href += `/${segment}`;
@@ -69,13 +71,29 @@ function getBreadcrumbSegments(
 	return items;
 }
 
-function getPathName(pathSlug: string | undefined) {
+function isCuid(segment: string): boolean {
+	return CUID_PATTERN.test(segment);
+}
+
+function formatCuid(cuid: string): string {
+	const prefix = cuid.slice(0, 2).toUpperCase();
+	const suffix = cuid.slice(-2).toUpperCase();
+	return `${prefix}...${suffix}`;
+}
+
+function getPathName(pathSlug: string | undefined): string {
+	if (!pathSlug) return "";
+
+	if (isCuid(pathSlug)) {
+		return formatCuid(pathSlug);
+	}
+
 	switch (pathSlug) {
 		case "dashboard":
 			return "Dashboard";
 		case "links":
 			return "Links";
 		default:
-			return pathSlug?.replace("-", " ").toUpperCase() ?? "";
+			return pathSlug.replace("-", " ").toUpperCase();
 	}
 }
