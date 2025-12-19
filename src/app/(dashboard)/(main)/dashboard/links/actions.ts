@@ -18,6 +18,7 @@ import { fetchPage } from "@/utils/url/fetcher";
 import { Prisma } from "@/generated/prisma/client";
 import { evaluateTests, calculateScore } from "@/lib/tests";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const redis = Redis.fromEnv();
 
@@ -198,7 +199,10 @@ export async function addLink(values: z.infer<typeof linkFormSchema>) {
 	};
 }
 
-export async function deleteLink(urlId: string) {
+export async function deleteLink(
+	urlId: string,
+	action: "revalidate" | "redirect"
+) {
 	const isDev = process.env.NODE_ENV === "development";
 
 	const rawIp = await getIp();
@@ -261,7 +265,11 @@ export async function deleteLink(urlId: string) {
 
 	await redis.del(`mobiopti:linkscore:${urlId}`);
 
-	revalidatePath("/dashboard/links");
+	if (action === "revalidate") {
+		revalidatePath("/dashboard/links");
+	} else {
+		redirect("/dashboard/links");
+	}
 
 	return {
 		error: null,

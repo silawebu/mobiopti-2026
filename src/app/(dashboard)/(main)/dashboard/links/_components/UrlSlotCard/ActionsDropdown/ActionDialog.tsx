@@ -45,7 +45,7 @@ export default function ActionDialog({
 
 		setLoading(true);
 
-		const { error } = await deleteLink(urlId);
+		const { error } = await deleteLink(urlId, "revalidate");
 
 		if (error) {
 			toast.error(error);

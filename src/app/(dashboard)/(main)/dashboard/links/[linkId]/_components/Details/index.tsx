@@ -5,6 +5,7 @@ import { Link2, Trash2 } from "lucide-react";
 import ScoreBar from "./ScoreBar";
 import RunTestsButton from "../RunTestsButton";
 import clsx from "clsx";
+import DeleteButton from "./DeleteButton";
 
 type Props = {
 	url: string;
@@ -41,9 +42,7 @@ export default function Details({ url, createdAt, score, linkId }: Props) {
 				</div>
 				<div className="flex justify-center sm:justify-start items-center gap-2 py-3 w-full sm:w-auto sm:border-none border-t-2 border-double">
 					<RunTestsButton linkId={linkId} />
-					<Button variant={"destructive"} size={"icon-lg"}>
-						<Trash2 />
-					</Button>
+					<DeleteButton linkId={linkId} />
 				</div>
 			</div>
 		</section>
