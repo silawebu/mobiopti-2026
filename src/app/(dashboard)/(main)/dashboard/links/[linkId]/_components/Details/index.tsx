@@ -3,6 +3,7 @@ import type { LinkScore } from "@/utils/link-score";
 import { Button } from "@/components/ui/button";
 import { Link2, Trash2 } from "lucide-react";
 import ScoreBar from "./ScoreBar";
+import RunTestsButton from "../RunTestsButton";
 
 type Props = {
 	url: string;
@@ -30,12 +31,7 @@ export default function Details({ url, createdAt, score }: Props) {
 					<p className="sm:ml-7 opacity-75 text-xs sm:text-sm">28 Dec. 2025</p>
 				</div>
 				<div className="flex justify-center sm:justify-start items-center gap-2 py-3 w-full sm:w-auto sm:border-none border-t-2 border-double">
-					<Button
-						className="bg-foreground text-background font-bold hover:bg-foreground hover:text-background hover:opacity-80"
-						size={"lg"}
-					>
-						Re-run tests
-					</Button>
+					<RunTestsButton />
 					<Button variant={"destructive"} size={"icon-lg"}>
 						<Trash2 />
 					</Button>
