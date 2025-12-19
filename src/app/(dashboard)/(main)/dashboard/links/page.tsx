@@ -7,8 +7,8 @@ import ExpectedError from "@/components/ExpectedError";
 import PageLayout from "./_components/PageLayout";
 import { appendScores, type UrlWithScore } from "@/utils/link-score";
 import UrlSlotCard from "./_components/UrlSlotCard";
-import { SubscriptionBanner } from "./_components/SubscribeBanner";
 import { hasFeature } from "@/utils/subscription";
+import SubscribeBanner from "./_components/SubscribeBanner";
 
 export type LinkSlot = UrlWithScore | null;
 
@@ -65,7 +65,7 @@ export default async function LinksPage() {
 			<div className="flex flex-col">
 				{!isSubscribed && (
 					<section>
-						<SubscriptionBanner />
+						<SubscribeBanner />
 					</section>
 				)}
 				<section className="flex flex-col gap-4 md:gap-6">
