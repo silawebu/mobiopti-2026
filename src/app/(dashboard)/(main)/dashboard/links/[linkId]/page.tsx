@@ -73,7 +73,7 @@ export default async function LinkDetailPage({ params }: Props) {
 
 	return (
 		<div className="flex flex-col gap-5">
-			<Details {...link} score={score} />
+			<Details {...link} score={score} linkId={linkId} />
 			<ResultMatrix matrixResult={matrixResult} linkId={linkId} />
 			<TestsView
 				testsResult={testsResult}

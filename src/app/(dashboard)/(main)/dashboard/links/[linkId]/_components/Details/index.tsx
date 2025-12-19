@@ -10,9 +10,10 @@ type Props = {
 	url: string;
 	createdAt: Date;
 	score: LinkScore;
+	linkId: string;
 };
 
-export default function Details({ url, createdAt, score }: Props) {
+export default function Details({ url, createdAt, score, linkId }: Props) {
 	return (
 		<section
 			className={clsx(
@@ -39,7 +40,7 @@ export default function Details({ url, createdAt, score }: Props) {
 					<p className="sm:ml-7 opacity-75 text-xs sm:text-sm">28 Dec. 2025</p>
 				</div>
 				<div className="flex justify-center sm:justify-start items-center gap-2 py-3 w-full sm:w-auto sm:border-none border-t-2 border-double">
-					<RunTestsButton />
+					<RunTestsButton linkId={linkId} />
 					<Button variant={"destructive"} size={"icon-lg"}>
 						<Trash2 />
 					</Button>
