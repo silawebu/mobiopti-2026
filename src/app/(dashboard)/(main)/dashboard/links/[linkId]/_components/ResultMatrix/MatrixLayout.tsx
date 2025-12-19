@@ -12,7 +12,7 @@ type Props = {
 
 export default function MatrixLayout({ children }: Props) {
 	return (
-		<Card>
+		<Card className="border-2 border-double">
 			<CardHeader>
 				<CardTitle>Result Matrix</CardTitle>
 				<CardDescription>
