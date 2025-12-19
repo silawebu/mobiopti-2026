@@ -3,9 +3,22 @@
 import { Sparkles } from "lucide-react";
 import SubscribeButton from "../../_components/Subscribe/SubscribeButton";
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 
-export const SubscriptionBanner = () => {
-	const [isVisible, setIsVisible] = useState(false);
+type Props = {
+	animate?: boolean;
+	className?: string;
+	cancelUrl?: string;
+	returnUrl?: string;
+};
+
+export default function SubscribeBanner({
+	animate = true,
+	className = "",
+	cancelUrl = "/dashboard/links",
+	returnUrl = "/dashboard/links",
+}: Props) {
+	const [isVisible, setIsVisible] = useState<boolean>(!animate);
 
 	useEffect(() => {
 		const timer = setTimeout(() => setIsVisible(true), 2000);
@@ -14,20 +27,17 @@ export const SubscriptionBanner = () => {
 
 	return (
 		<div
-			className={`
-        grid transition-all duration-500 ease-out
-        ${
-					isVisible
-						? "grid-rows-[1fr] opacity-100"
-						: "grid-rows-[0fr] opacity-0"
-				}
-      `}
+			className={clsx(
+				"grid transition-all duration-500 ease-out",
+				className,
+				isVisible ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+			)}
 		>
 			<div className="overflow-hidden">
 				<div
 					className={`
-            p-4 mb-10 rounded-lg bg-linear-to-br from-primary/25 via-primary/15 to-primary/5 
-            border-2 border-primary/30 flex items-center justify-between gap-4
+            p-4 mb-10 rounded-lg bg-linear-to-br from-[#4a3437] via-[#382e35] to-[#282833] 
+            border-2 border-[#72433b] flex items-center justify-between gap-4
             transition-transform duration-500 ease-out flex-col sm:flex-row
             ${isVisible ? "translate-y-0" : "-translate-y-2"}
           `}
@@ -44,12 +54,16 @@ export const SubscriptionBanner = () => {
 						</div>
 					</div>
 					<SubscribeButton
-						cancelUrl="/dashboard/links"
-						returnUrl="/dashboard/links"
-						button={{ size: "default", label: "Subscribe Now", className: "w-full sm:w-fit" }}
+						cancelUrl={cancelUrl}
+						returnUrl={returnUrl}
+						button={{
+							size: "default",
+							label: "Subscribe Now",
+							className: "w-full sm:w-fit",
+						}}
 					/>
 				</div>
 			</div>
 		</div>
 	);
-};
+}
