@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link2, Trash2 } from "lucide-react";
 import ScoreBar from "./ScoreBar";
 import RunTestsButton from "../RunTestsButton";
+import clsx from "clsx";
 
 type Props = {
 	url: string;
@@ -13,7 +14,14 @@ type Props = {
 
 export default function Details({ url, createdAt, score }: Props) {
 	return (
-		<section className="border-2 border-double bg-card rounded-xl w-full h-40 sm:h-32 relative overflow-hidden pt-6">
+		<section
+			className={clsx(
+				"border-2 border-double rounded-xl w-full h-40 sm:h-32 relative overflow-hidden pt-6",
+				score === undefined || score === "error"
+					? "border-destructive-border bg-linear-to-br from-destructive-from to-destructive-to"
+					: "border-border bg-card"
+			)}
+		>
 			<ScoreBar score={score} />
 			<div className="w-full flex-col sm:flex-row sm:px-6 h-full flex items-center justify-between gap-3">
 				<div className="flex flex-col pt-3 sm:pt-0 px-3 sm:px-0 truncate items-center justify-center sm:items-start h-full gap-0 sm:gap-1 w-full sm:w-auto">
