@@ -7,6 +7,10 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import Details from "./_components/Details";
 import { getLinkScore } from "@/utils/link-score";
+import ResultMatrix, { Matrix } from "./_components/ResultMatrix";
+import { getResultMatrix } from "@/utils/get-result-matrix";
+import { getTests } from "@/utils/get-tests";
+import TestsView from "./_components/TestsView";
 
 type Props = {
 	params: Promise<{ linkId: string }>;
@@ -52,13 +56,23 @@ export default async function LinkDetailPage({ params }: Props) {
 		notFound();
 	}
 
-	const score = await getLinkScore(linkId);
-
 	const isSubscribed: boolean = await hasFeature(session.user.id, "paid_tests");
 
+	const [score, matrixResult, testsResult] = await Promise.all([
+		getLinkScore(linkId),
+		tryCatch(getResultMatrix(linkId)),
+		tryCatch(getTests(linkId, isSubscribed)),
+	]);
+
 	return (
-		<div>
+		<div className="flex flex-col gap-5">
 			<Details {...link} score={score} />
+			<ResultMatrix matrixResult={matrixResult} />
+			<TestsView
+				testsResult={testsResult}
+				isSubscribed={isSubscribed}
+				linkId={linkId}
+			/>
 		</div>
 	);
 }
