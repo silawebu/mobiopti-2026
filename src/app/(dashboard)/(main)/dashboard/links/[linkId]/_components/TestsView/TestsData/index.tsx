@@ -35,7 +35,7 @@ export default function TestsData({
 					<span className="text-muted-foreground">
 						No tests have been done for this link yet...
 					</span>
-					<RunTestsButton />
+					<RunTestsButton linkId={linkId} />
 				</div>
 			)}
 		</div>
