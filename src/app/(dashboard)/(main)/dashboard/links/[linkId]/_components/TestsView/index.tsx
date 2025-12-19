@@ -1,6 +1,6 @@
 import type { TestWithLastRun } from "@/utils/get-tests";
 import TestsError from "./TestsError";
-import TestsData from "./TestsData";
+import TestsData, { SubscriptionSettings } from "./TestsData";
 import TestsLayout from "./TestsLayout";
 
 type TestsResult =
@@ -9,15 +9,10 @@ type TestsResult =
 
 type Props = {
 	testsResult: TestsResult;
-	isSubscribed: boolean;
-	linkId: string;
+	subscription: SubscriptionSettings;
 };
 
-export default function TestsView({
-	testsResult,
-	isSubscribed,
-	linkId,
-}: Props) {
+export default function TestsView({ testsResult, subscription }: Props) {
 	const { data: tests, error } = testsResult;
 
 	if (error) {
@@ -30,7 +25,7 @@ export default function TestsView({
 
 	return (
 		<TestsLayout>
-			<TestsData tests={tests} isSubscribed={isSubscribed} linkId={linkId} />
+			<TestsData tests={tests} subscription={subscription} />
 		</TestsLayout>
 	);
 }

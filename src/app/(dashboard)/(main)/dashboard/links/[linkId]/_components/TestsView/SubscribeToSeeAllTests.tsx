@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { BadgeX, Bot } from "lucide-react";
 import SubscribeBanner from "../../../_components/SubscribeBanner";
 
-type Props = { linkId: string };
+type Props = { linkId: string; description: string | null };
 
-export default function SubscribeToSeeAllTests({ linkId }: Props) {
+export default function SubscribeToSeeAllTests({ linkId, description }: Props) {
 	return (
 		<div className="w-full relative">
 			<div className="relative">
@@ -14,6 +14,7 @@ export default function SubscribeToSeeAllTests({ linkId }: Props) {
 						animate={false}
 						returnUrl={`/dashboard/links/${linkId}`}
 						cancelUrl={`/dashboard/links/${linkId}`}
+						description={description}
 					/>
 				</div>
 				<div

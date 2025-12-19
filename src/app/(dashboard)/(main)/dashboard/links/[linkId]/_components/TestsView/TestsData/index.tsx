@@ -3,13 +3,21 @@ import TestCard from "./TestCard";
 import RunTestsButton from "../../RunTestsButton";
 import SubscribeToSeeAllTests from "../SubscribeToSeeAllTests";
 
-type Props = {
-	tests: TestWithLastRun[];
+export type SubscriptionSettings = {
 	isSubscribed: boolean;
 	linkId: string;
+	description: string | null;
 };
 
-export default function TestsData({ tests, isSubscribed, linkId }: Props) {
+type Props = {
+	tests: TestWithLastRun[];
+	subscription: SubscriptionSettings;
+};
+
+export default function TestsData({
+	tests,
+	subscription: { isSubscribed, linkId, description },
+}: Props) {
 	return (
 		<div className="w-full flex justify-center">
 			{tests.length > 0 ? (
@@ -18,7 +26,9 @@ export default function TestsData({ tests, isSubscribed, linkId }: Props) {
 						<TestCard key={index} {...test} />
 					))}
 
-					{!isSubscribed && <SubscribeToSeeAllTests linkId={linkId} />}
+					{!isSubscribed && (
+						<SubscribeToSeeAllTests linkId={linkId} description={description} />
+					)}
 				</div>
 			) : (
 				<div className="flex flex-col gap-3 items-center justify-center text-center">

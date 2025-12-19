@@ -10,6 +10,7 @@ type Props = {
 	className?: string;
 	cancelUrl?: string;
 	returnUrl?: string;
+	description?: string | null;
 };
 
 export default function SubscribeBanner({
@@ -17,6 +18,7 @@ export default function SubscribeBanner({
 	className = "",
 	cancelUrl = "/dashboard/links",
 	returnUrl = "/dashboard/links",
+	description = "Unlock advanced analysis to improve your SEO",
 }: Props) {
 	const [isVisible, setIsVisible] = useState<boolean>(!animate);
 
@@ -49,7 +51,7 @@ export default function SubscribeBanner({
 						<div>
 							<p className="font-medium text-foreground">Upgrade to Premium</p>
 							<p className="text-sm text-muted-foreground">
-								Unlock advanced analysis to improve your SEO
+								{description ?? "Unlock advanced analysis to improve your SEO"}
 							</p>
 						</div>
 					</div>

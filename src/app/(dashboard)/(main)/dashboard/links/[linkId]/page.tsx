@@ -64,15 +64,38 @@ export default async function LinkDetailPage({ params }: Props) {
 		tryCatch(getTests(linkId, isSubscribed)),
 	]);
 
+	const description: string | null = getSubscribeBannerDescription(
+		matrixResult.data
+	);
+
 	return (
 		<div className="flex flex-col gap-5">
 			<Details {...link} score={score} />
 			<ResultMatrix matrixResult={matrixResult} />
 			<TestsView
 				testsResult={testsResult}
-				isSubscribed={isSubscribed}
-				linkId={linkId}
+				subscription={{ isSubscribed, linkId, description }}
 			/>
 		</div>
 	);
+}
+
+function getSubscribeBannerDescription(matrix: Matrix | null): string | null {
+	if (matrix == null) {
+		return null;
+	}
+
+	let ok = 0;
+	let warning = 0;
+	let critical = 0;
+
+	for (const category of matrix) {
+		for (const severity of Object.values(category.severities)) {
+			ok += severity.ok;
+			warning += severity.warning;
+			critical += severity.critical;
+		}
+	}
+
+	return `To see ${critical} critical, ${warning} warnings, ${ok} okay test results`;
 }
