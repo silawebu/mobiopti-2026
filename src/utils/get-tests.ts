@@ -1,10 +1,18 @@
 import "server-only";
 
-import type { Test, UrlTest } from "@/generated/prisma/client";
+import type { UrlTestStatus } from "@/generated/prisma/enums";
 
 import prisma from "@/lib/prisma";
 
-export type TestWithLastRun = Test & { lastRun: UrlTest | null };
+export type TestWithLastRun = {
+	severity: number;
+	description: string | null;
+	title: string;
+	lastRun: {
+		status: UrlTestStatus;
+		content: string | null;
+	} | null;
+};
 
 export async function getTests(
 	linkId: string,
@@ -12,11 +20,18 @@ export async function getTests(
 ): Promise<TestWithLastRun[]> {
 	const tests = await prisma.test.findMany({
 		where: viewPaidTests ? {} : { isPaid: false },
-		include: {
+		select: {
+			severity: true,
+			description: true,
+			title: true,
 			urlTests: {
 				where: { urlId: linkId },
 				orderBy: { createdAt: "desc" },
 				take: 1,
+				select: {
+					status: true,
+					content: true,
+				},
 			},
 		},
 	});
