@@ -65,7 +65,7 @@ export default function ActionDialog({
 
 		setLoading(true);
 
-		const { error } = await rerunTests(urlId);
+		const { error } = await rerunTests(urlId, false);
 
 		if (error) {
 			toast.error(error);

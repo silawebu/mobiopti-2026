@@ -268,7 +268,7 @@ export async function deleteLink(urlId: string) {
 	};
 }
 
-export async function rerunTests(urlId: string) {
+export async function rerunTests(urlId: string, fromLinkDetail: boolean) {
 	const isDev = process.env.NODE_ENV === "development";
 
 	const rawIp = await getIp();
@@ -380,7 +380,13 @@ export async function rerunTests(urlId: string) {
 		};
 	}
 
-	revalidatePath("/dashboard/links");
+	let pathToRevalidate: string = "/dashboard/links";
+
+	if (fromLinkDetail) {
+		pathToRevalidate = `/dashboard/links/${urlId}`;
+	}
+
+	revalidatePath(pathToRevalidate);
 
 	return {
 		error: null,
