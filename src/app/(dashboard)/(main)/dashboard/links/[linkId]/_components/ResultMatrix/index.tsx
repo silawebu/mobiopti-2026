@@ -1,14 +1,8 @@
-import type { Severity } from "@/utils/types";
-import type { UrlTestStatus } from "@/generated/prisma/enums";
+import type { Matrix } from "@/utils/get-result-matrix";
 
 import MatrixLayout from "./MatrixLayout";
 import MatrixData from "./MatrixData";
 import MatrixError from "./MatrixError";
-
-export type Matrix = {
-	name: string;
-	severities: Record<Severity, Record<UrlTestStatus, number>>;
-}[];
 
 type MatrixResult =
 	| { data: Matrix; error: null }
@@ -16,9 +10,10 @@ type MatrixResult =
 
 type Props = {
 	matrixResult: MatrixResult;
+	linkId: string;
 };
 
-export default function ResultMatrix({ matrixResult }: Props) {
+export default function ResultMatrix({ matrixResult, linkId }: Props) {
 	const { data: matrix, error } = matrixResult;
 
 	if (matrix) {
@@ -29,8 +24,8 @@ export default function ResultMatrix({ matrixResult }: Props) {
 		);
 	}
 
-	if(error) {
-		console.error(error);
+	if (error) {
+		console.error(`[ResultMatrix] Failed for linkId ${linkId}:`, error);
 	}
 
 	return (

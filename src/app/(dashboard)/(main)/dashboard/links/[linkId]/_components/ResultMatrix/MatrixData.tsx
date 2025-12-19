@@ -1,4 +1,4 @@
-import type { Matrix } from ".";
+import type { Matrix } from "@/utils/get-result-matrix";
 
 import {
 	Table,

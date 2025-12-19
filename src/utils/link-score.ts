@@ -11,17 +11,22 @@ export type LinkScore = number | "error" | undefined;
 export type UrlWithScore = Url & { score: LinkScore };
 
 export async function getLinkScore(linkId: string): Promise<LinkScore> {
-	const kv = await redis.get<string>(`mobiopti:linkscore:${linkId}`);
+	try {
+		const kv = await redis.get<string>(`mobiopti:linkscore:${linkId}`);
 
-	let score: LinkScore = undefined;
+		if (kv === "error") {
+			return "error";
+		}
 
-	if (kv === "error") {
-		score = "error";
-	} else if (kv !== null) {
-		score = Math.round(parseFloat(kv));
+		if (kv !== null) {
+			return Math.round(parseFloat(kv));
+		}
+
+		return undefined;
+	} catch (err) {
+		console.error(`[getLinkScore] Redis error for ${linkId}:`, err);
+		return undefined;
 	}
-
-	return score;
 }
 
 export async function appendScores(urls: Url[]): Promise<UrlWithScore[]> {

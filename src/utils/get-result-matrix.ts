@@ -1,10 +1,14 @@
 import "server-only";
 
-import type { Matrix } from "@/app/(dashboard)/(main)/dashboard/links/[linkId]/_components/ResultMatrix";
 import type { Severity } from "@/utils/types";
 import type { UrlTestStatus } from "@/generated/prisma/enums";
 
 import prisma from "@/lib/prisma";
+
+export type Matrix = {
+	name: string;
+	severities: Record<Severity, Record<UrlTestStatus, number>>;
+}[];
 
 function blankCounters(): Record<Severity, Record<UrlTestStatus, number>> {
 	return {

@@ -7,10 +7,12 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import Details from "./_components/Details";
 import { getLinkScore } from "@/utils/link-score";
-import ResultMatrix, { Matrix } from "./_components/ResultMatrix";
-import { getResultMatrix } from "@/utils/get-result-matrix";
+import ResultMatrix from "./_components/ResultMatrix";
+import { getResultMatrix, type Matrix } from "@/utils/get-result-matrix";
 import { getTests } from "@/utils/get-tests";
 import TestsView from "./_components/TestsView";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
 	params: Promise<{ linkId: string }>;
@@ -29,18 +31,21 @@ export default async function LinkDetailPage({ params }: Props) {
 		);
 	}
 
-	const { data: link, error } = await tryCatch(
-		prisma.url.findUnique({
-			where: {
-				id: linkId,
-				userId: session.user.id,
-			},
-			select: {
-				url: true,
-				createdAt: true,
-			},
-		})
-	);
+	const [{ data: link, error }, isSubscribed] = await Promise.all([
+		tryCatch(
+			prisma.url.findUnique({
+				where: {
+					id: linkId,
+					userId: session.user.id,
+				},
+				select: {
+					url: true,
+					createdAt: true,
+				},
+			})
+		),
+		hasFeature(session.user.id, "paid_tests"),
+	]);
 
 	if (error) {
 		console.error(error);
@@ -56,8 +61,6 @@ export default async function LinkDetailPage({ params }: Props) {
 		notFound();
 	}
 
-	const isSubscribed: boolean = await hasFeature(session.user.id, "paid_tests");
-
 	const [score, matrixResult, testsResult] = await Promise.all([
 		getLinkScore(linkId),
 		tryCatch(getResultMatrix(linkId)),
@@ -71,7 +74,7 @@ export default async function LinkDetailPage({ params }: Props) {
 	return (
 		<div className="flex flex-col gap-5">
 			<Details {...link} score={score} />
-			<ResultMatrix matrixResult={matrixResult} />
+			<ResultMatrix matrixResult={matrixResult} linkId={linkId} />
 			<TestsView
 				testsResult={testsResult}
 				subscription={{ isSubscribed, linkId, description }}
