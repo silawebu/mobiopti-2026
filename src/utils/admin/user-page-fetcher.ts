@@ -2,7 +2,7 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 
-export const PAGE_SIZE: number = 3 as const;
+export const PAGE_SIZE: number = 15 as const;
 
 export type SubscriptionStatus =
 	| { plan: "premium"; cancelAtPeriodEnd: boolean }
