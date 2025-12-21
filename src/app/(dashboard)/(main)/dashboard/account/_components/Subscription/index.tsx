@@ -2,7 +2,7 @@ import type { SubData } from "../../page";
 
 import { TriangleAlert } from "lucide-react";
 import ComponentLayout from "./ComponentLayout";
-import SubscribeBanner from "../../../links/_components/SubscribeBanner";
+import SubscribeBanner from "@/components/Subscription/SubscribeBanner";
 import ManageButton from "./ManageButton";
 import SubCard from "./SubCard";
 

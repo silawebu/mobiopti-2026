@@ -8,7 +8,8 @@ import PageLayout from "./_components/PageLayout";
 import { appendScores, type UrlWithScore } from "@/utils/link-score";
 import UrlSlotCard from "./_components/UrlSlotCard";
 import { hasFeature } from "@/utils/subscription";
-import SubscribeBanner from "./_components/SubscribeBanner";
+import SubscribeBanner from "@/components/Subscription/SubscribeBanner";
+
 
 export type LinkSlot = UrlWithScore | null;
 

@@ -1,7 +1,7 @@
 import SeverityIcon from "@/components/Icons/Severity";
 import { Badge } from "@/components/ui/badge";
 import { BadgeX, Bot } from "lucide-react";
-import SubscribeBanner from "../../../_components/SubscribeBanner";
+import SubscribeBanner from "@/components/Subscription/SubscribeBanner";
 
 type Props = { linkId: string; description: string | null };
 

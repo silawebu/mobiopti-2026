@@ -1,7 +1,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import SubscribeButton from "../../_components/Subscribe/SubscribeButton";
+import SubscribeButton from "./SubscribeButton";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
