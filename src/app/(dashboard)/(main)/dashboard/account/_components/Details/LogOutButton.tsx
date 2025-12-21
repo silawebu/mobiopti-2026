@@ -38,7 +38,8 @@ export default function LogOutButton() {
 			disabled={loading}
 			size={"lg"}
 		>
-			{loading ? <Spinner /> : <LogOut />} Log Out
+			{loading ? <Spinner /> : <LogOut />}{" "}
+			<span className="hidden sm:block">Log Out</span>
 		</Button>
 	);
 }
