@@ -2,14 +2,21 @@ import ExpectedError from "@/components/ExpectedError";
 import { User } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { fetchUsersPage } from "@/utils/admin/user-page-fetcher";
+import { fetchUsersPage, PAGE_SIZE } from "@/utils/admin/user-page-fetcher";
 import { getUserPlan } from "@/utils/subscription";
 import { PlanId } from "@/utils/subscription/plans";
 import { tryCatch } from "@/utils/try-catch";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Paginator from "./_components/Pagination";
 
-export default async function UserManagement() {
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default async function UserManagement({
+	searchParams,
+}: {
+	searchParams: SearchParams;
+}) {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
@@ -18,7 +25,10 @@ export default async function UserManagement() {
 		notFound();
 	}
 
-	const { data, error } = await tryCatch(fetchUsersPage(1));
+	const pageParam = (await searchParams).page;
+	const page = pageParam ? parseInt(pageParam as string) : 1;
+
+	const { data, error } = await tryCatch(fetchUsersPage(page));
 
 	if (error) {
 		console.error("[ADMIN:USER-MANAGEMENT]", error);
@@ -30,13 +40,25 @@ export default async function UserManagement() {
 		);
 	}
 
+	const { pageCount, total, users } = data;
+
+	if (page > pageCount) {
+		notFound();
+	}
+
 	return (
-		<div className="relative w-full overflow-x-hidden">
-			<p>
-				Page {data.page} of {data.pageCount} ({data.total} users)
-			</p>
-			<hr />
-			<pre>{JSON.stringify(data.users, null, 2)}</pre>
-		</div>
+		<section className="relative w-full overflow-x-hidden">
+			<div>
+				<div>
+					<pre>{JSON.stringify(users, null, 2)}</pre>
+				</div>
+				<Paginator
+					count={total}
+					page={page}
+					itemsPerPage={PAGE_SIZE}
+					search={null}
+				/>
+			</div>
+		</section>
 	);
 }
