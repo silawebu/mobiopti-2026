@@ -36,7 +36,7 @@ export default function SubscribeButton({
 
 		await authClient.subscription.upgrade({
 			plan: "premium",
-			successUrl: "/successfully-subscribed",
+			successUrl: "/dashboard/account/subscription-success",
 			cancelUrl: cancelUrl ?? "/dashboard",
 			returnUrl: returnUrl ?? "/dashboard",
 			fetchOptions: {
