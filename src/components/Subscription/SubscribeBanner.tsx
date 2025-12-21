@@ -11,6 +11,7 @@ type Props = {
 	cancelUrl?: string;
 	returnUrl?: string;
 	description?: string | null;
+	redirectTo?: string;
 };
 
 export default function SubscribeBanner({
@@ -19,6 +20,7 @@ export default function SubscribeBanner({
 	cancelUrl = "/dashboard/links",
 	returnUrl = "/dashboard/links",
 	description = "Unlock advanced analysis to improve your SEO",
+	redirectTo
 }: Props) {
 	const [isVisible, setIsVisible] = useState<boolean>(!animate);
 
@@ -57,6 +59,7 @@ export default function SubscribeBanner({
 					<SubscribeButton
 						cancelUrl={cancelUrl}
 						returnUrl={returnUrl}
+						redirectTo={redirectTo}
 						button={{
 							size: "default",
 							label: "Subscribe Now",

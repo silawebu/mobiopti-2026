@@ -14,6 +14,7 @@ export default function SubscribeToSeeAllTests({ linkId, description }: Props) {
 						animate={false}
 						returnUrl={`/dashboard/links/${linkId}`}
 						cancelUrl={`/dashboard/links/${linkId}`}
+						redirectTo={`/dashboard/links/${linkId}`}
 						description={description}
 					/>
 				</div>

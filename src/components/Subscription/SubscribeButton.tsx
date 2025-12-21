@@ -11,6 +11,7 @@ import { toast } from "sonner";
 type Props = {
 	cancelUrl?: string;
 	returnUrl?: string;
+	redirectTo?: string;
 	button: {
 		label?: string;
 		size?: VariantProps<typeof buttonVariants>["size"];
@@ -21,6 +22,7 @@ type Props = {
 export default function SubscribeButton({
 	cancelUrl,
 	returnUrl,
+	redirectTo,
 	button: {
 		label = "Get Access",
 		size: buttonSize = "lg",
@@ -36,7 +38,9 @@ export default function SubscribeButton({
 
 		await authClient.subscription.upgrade({
 			plan: "premium",
-			successUrl: "/dashboard/account/subscription-success",
+			successUrl: `/dashboard/account/subscription-success${
+				redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ""
+			}`,
 			cancelUrl: cancelUrl ?? "/dashboard",
 			returnUrl: returnUrl ?? "/dashboard",
 			fetchOptions: {
