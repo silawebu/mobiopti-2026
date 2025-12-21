@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import MainLayoutComponent from "./_components/MainLayout";
-import { redirect } from "next/navigation";
 
 export default async function MainTemplate({
 	children,
@@ -13,7 +12,7 @@ export default async function MainTemplate({
 	});
 
 	if (!session) {
-		return redirect("/login");
+		return children;
 	}
 
 	return (
