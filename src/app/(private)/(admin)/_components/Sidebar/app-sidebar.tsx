@@ -18,13 +18,13 @@ import BrandIcon from "@/components/Icons/BrandIcon";
 
 const navMain = [
 	{
-		title: "Admin home",
+		title: "Admin Home",
 		url: "/admin",
 		icon: Home,
 		isActive: true,
 	},
 	{
-		title: "User management",
+		title: "User Management",
 		url: "/admin/users",
 		icon: User,
 		isActive: true,
@@ -37,7 +37,7 @@ const navMain = [
 		disabled: true,
 	},
 	{
-		title: "Tutorials & courses",
+		title: "Tutorials & Courses",
 		url: "/admin/tutorials-and-courses",
 		icon: GraduationCap,
 		isActive: false,
