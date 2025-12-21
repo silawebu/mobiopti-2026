@@ -45,7 +45,8 @@ export function AppSidebar({
 				title: "Reports",
 				url: "/dashboard/reports",
 				icon: FileChartColumn,
-				isActive: true,
+				isActive: false,
+				disabled: true,
 			},
 		]
 	};
