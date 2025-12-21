@@ -37,12 +37,11 @@ export default function SubscribeBanner({
 		>
 			<div className="overflow-hidden">
 				<div
-					className={`
-            p-4 mb-10 rounded-lg bg-linear-to-br from-[#4a3437] via-[#382e35] to-[#282833] 
-            border-2 border-[#72433b] flex items-center justify-between gap-4
-            transition-transform duration-500 ease-out flex-col sm:flex-row
-            ${isVisible ? "translate-y-0" : "-translate-y-2"}
-          `}
+					className={clsx(
+						"p-4 rounded-lg bg-linear-to-br from-[#4a3437] via-[#382e35] to-[#282833] border-2 border-[#72433b] flex items-center justify-between gap-4 transition-transform duration-500 ease-out flex-col sm:flex-row",
+						isVisible ? "translate-y-0" : "-translate-y-2",
+						animate ? "mb-10" : "mb-0"
+					)}
 				>
 					<div className="flex items-center gap-3">
 						<div className="p-2 rounded-full bg-primary/20">
