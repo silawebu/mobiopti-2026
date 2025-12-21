@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Details from "./_components/Details";
 import Subscription from "./_components/Subscription";
-import { Button } from "@/components/ui/button";
+import CloseAccount from "./_components/CloseAccount";
 
 export type UserData = {
 	name: User["name"];
@@ -66,11 +66,7 @@ export default async function UserAccountPage() {
 		<div className="flex flex-col gap-4">
 			<Details {...data.user} />
 			<Subscription subscription={data.subscription} />
-			<div className="w-full flex justify-end">
-				<Button size={"sm"} variant={"destructive"}>
-					Close account
-				</Button>
-			</div>
+			<CloseAccount />
 		</div>
 	);
 }
