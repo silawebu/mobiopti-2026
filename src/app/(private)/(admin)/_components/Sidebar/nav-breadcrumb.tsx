@@ -89,8 +89,8 @@ function getPathName(pathSlug: string | undefined): string {
 	}
 
 	switch (pathSlug) {
-		case "users":
-			return "Users";
+		case "user-management":
+			return "User Management";
 		default:
 			return pathSlug.replace("-", " ").toUpperCase();
 	}

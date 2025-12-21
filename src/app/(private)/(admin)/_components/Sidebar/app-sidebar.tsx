@@ -25,7 +25,7 @@ const navMain = [
 	},
 	{
 		title: "User Management",
-		url: "/admin/users",
+		url: "/admin/user-management",
 		icon: User,
 		isActive: true,
 	},
