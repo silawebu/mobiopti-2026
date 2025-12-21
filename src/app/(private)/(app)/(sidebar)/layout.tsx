@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import MainLayoutComponent from "./_components/MainLayout";
 
-export default async function MainTemplate({
+export default async function MainLayout({
 	children,
 }: {
 	children: React.ReactNode;
