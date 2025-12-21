@@ -9,6 +9,8 @@ import { tryCatch } from "@/utils/try-catch";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Paginator from "./_components/Pagination";
+import { DataTable } from "./_components/UserDataTable/data-table";
+import { columns } from "./_components/UserDataTable/columns";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -49,8 +51,8 @@ export default async function UserManagement({
 	return (
 		<section className="relative w-full overflow-x-hidden">
 			<div>
-				<div>
-					<pre>{JSON.stringify(users, null, 2)}</pre>
+				<div className="container mx-auto pb-10 w-full min-h-[618px] h-[calc(100svh-280px)]">
+					<DataTable columns={columns} data={users} />
 				</div>
 				<Paginator
 					count={total}
