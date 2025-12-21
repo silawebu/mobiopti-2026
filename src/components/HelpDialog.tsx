@@ -19,7 +19,7 @@ type Props = {
 export default function HelpDialog({ children, label, text }: Props) {
 	return (
 		<AlertDialog>
-			<AlertDialogTrigger>{children}</AlertDialogTrigger>
+			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>{label}</AlertDialogTitle>

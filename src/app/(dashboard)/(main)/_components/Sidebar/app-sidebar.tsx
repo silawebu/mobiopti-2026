@@ -47,14 +47,7 @@ export function AppSidebar({
 				icon: FileChartColumn,
 				isActive: true,
 			},
-		],
-		navSecondary: [
-			{
-				title: "Support",
-				url: "mailto:mail@martinsil.cz",
-				icon: LifeBuoy,
-			},
-		],
+		]
 	};
 
 	if (isAdmin) {
@@ -88,7 +81,7 @@ export function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
+				<NavSecondary className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={props.user} />
