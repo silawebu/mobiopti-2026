@@ -6,6 +6,7 @@ import { tryCatch } from "@/utils/try-catch";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
+import Details from "./_components/Details";
 
 export type UserData = {
 	name: User["name"];
@@ -61,7 +62,7 @@ export default async function UserAccountPage() {
 
 	return (
 		<div>
-			<pre>{JSON.stringify(data, null, 2)}</pre>
+			<Details {...data.user} />
 		</div>
 	);
 }
