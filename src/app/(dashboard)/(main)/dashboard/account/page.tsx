@@ -1,5 +1,5 @@
 import type { User } from "better-auth";
-import type { Subscription } from "@/generated/prisma/client";
+import type { Subscription as Sub } from "@/generated/prisma/client";
 
 import { auth } from "@/lib/auth";
 import { tryCatch } from "@/utils/try-catch";
@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Details from "./_components/Details";
+import Subscription from "./_components/Subscription";
+import { Button } from "@/components/ui/button";
 
 export type UserData = {
 	name: User["name"];
@@ -16,10 +18,10 @@ export type UserData = {
 };
 
 export type SubData = {
-	plan: Subscription["plan"];
-	periodStart: Subscription["periodStart"];
-	periodEnd: Subscription["periodEnd"];
-	cancelAtPeriodEnd: Subscription["cancelAtPeriodEnd"];
+	plan: Sub["plan"];
+	periodStart: Sub["periodStart"];
+	periodEnd: Sub["periodEnd"];
+	cancelAtPeriodEnd: Sub["cancelAtPeriodEnd"];
 };
 
 type AccountPageData = {
@@ -61,8 +63,14 @@ export default async function UserAccountPage() {
 	};
 
 	return (
-		<div>
+		<div className="flex flex-col gap-4">
 			<Details {...data.user} />
+			<Subscription subscription={data.subscription} />
+			<div className="w-full flex justify-end">
+				<Button size={"sm"} variant={"destructive"}>
+					Close account
+				</Button>
+			</div>
 		</div>
 	);
 }
