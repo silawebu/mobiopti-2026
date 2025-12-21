@@ -30,7 +30,7 @@ export function AppSidebar({
 	const data = {
 		navMain: [
 			{
-				title: "Dahboard",
+				title: "Dashboard",
 				url: "/dashboard",
 				icon: Home,
 				isActive: true,
@@ -53,7 +53,7 @@ export function AppSidebar({
 
 	if (isAdmin) {
 		data.navMain.push({
-			url: "/dashboard/admin",
+			url: "/admin",
 			title: "Administration",
 			icon: ShieldUser,
 			isActive: true,
