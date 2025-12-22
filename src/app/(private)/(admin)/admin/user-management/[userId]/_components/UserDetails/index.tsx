@@ -10,7 +10,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { BadgeCheck, BadgeX, ShieldHalf } from "lucide-react";
-import StripeLink from "./StripeLink";
+import StripeLink from "../StripeLink";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import clsx from "clsx";
@@ -138,7 +138,7 @@ export default function UserDetails({
 			<CardFooter>
 				<div className="flex flex-col md:flex-row items-center gap-3">
 					{stripeCustomerId && (
-						<StripeLink stripeCustomerId={stripeCustomerId} />
+						<StripeLink type="customers" value={stripeCustomerId} />
 					)}
 				</div>
 			</CardFooter>
