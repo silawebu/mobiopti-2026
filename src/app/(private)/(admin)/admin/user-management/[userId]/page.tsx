@@ -7,6 +7,7 @@ import AdminUserPageLayout from "./_components/PageLayout";
 import ExpectedError from "@/components/ExpectedError";
 import { getUsersLinksWithScore } from "@/utils/admin/get-users-links-with-score";
 import UserDetails from "./_components/UserDetails";
+import { isSuperAdmin } from "@/utils/admin/is-super-admin";
 
 type Props = {
 	params: Promise<{ userId: string }>;
@@ -55,9 +56,17 @@ export default async function AdminUserDetail({ params }: Props) {
 		tryCatch(getUsersLinksWithScore(userId)),
 	]);
 
+	const isMeSuperAdmin = isSuperAdmin(session.user.id, session.user.role);
+	const isUserSuperAdmin = isSuperAdmin(userId, user.role);
+
 	return (
 		<AdminUserPageLayout>
-			<UserDetails {...user} />
+			<UserDetails
+				{...user}
+				isMeSuperAdmin={isMeSuperAdmin}
+				isUserSuperAdmin={isUserSuperAdmin}
+				isMe={user.id === session.user.id}
+			/>
 			<div className="w-full xl:block hidden overflow-x-scroll">
 				<pre>{JSON.stringify(user, null, 2)}</pre>
 				<hr />

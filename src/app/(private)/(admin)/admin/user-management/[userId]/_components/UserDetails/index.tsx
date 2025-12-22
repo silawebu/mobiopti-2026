@@ -17,7 +17,11 @@ import clsx from "clsx";
 import ClientDate from "@/components/ClientDate";
 import ActionsDropdown from "./ActionsDropdown";
 
-type Props = User;
+type Props = User & {
+	isMeSuperAdmin: boolean;
+	isUserSuperAdmin: boolean;
+	isMe: boolean;
+};
 
 export default function UserDetails({
 	id,
@@ -28,6 +32,9 @@ export default function UserDetails({
 	emailVerified,
 	createdAt,
 	role,
+	isMeSuperAdmin,
+	isUserSuperAdmin,
+	isMe,
 }: Props) {
 	return (
 		<Card>
@@ -36,6 +43,31 @@ export default function UserDetails({
 				<CardDescription>
 					Here you can see everything about this user
 				</CardDescription>
+				{isMe ? (
+					<CardAction>
+						<Badge className="hidden md:block bg-muted-foreground text-muted font-bold text-base">
+							This is you
+						</Badge>
+						<Badge className="md:hidden bg-muted-foreground text-muted font-bold text-sm">
+							Me
+						</Badge>
+					</CardAction>
+				) : isUserSuperAdmin ? (
+					<CardAction>
+						<Badge className="hidden md:block font-bold text-base">
+							Super Admin
+						</Badge>
+						<Badge className="md:hidden font-bold text-sm">Boss</Badge>
+					</CardAction>
+				) : (
+					<CardAction>
+						<ActionsDropdown
+							isSuperAdmin={isMeSuperAdmin}
+							userId={id}
+							role={role === "admin" ? "admin" : "user"}
+						/>
+					</CardAction>
+				)}
 			</CardHeader>
 			<CardContent>
 				<div className="flex flex-col gap-5">
@@ -54,7 +86,9 @@ export default function UserDetails({
 								{role === "admin" && (
 									<Badge className="bg-blue-500">
 										<ShieldHalf />
-										<span className="hidden sm:block text-xs leading-none">Admin</span>
+										<span className="hidden sm:block text-xs leading-none">
+											Admin
+										</span>
 									</Badge>
 								)}
 							</div>
