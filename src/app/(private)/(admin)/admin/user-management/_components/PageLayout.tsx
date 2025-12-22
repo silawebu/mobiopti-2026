@@ -4,7 +4,7 @@ type Props = {
 	children: React.ReactNode;
 };
 
-export default function AdminUserManafementLayout({ children }: Props) {
+export default function AdminUserManafementPageLayout({ children }: Props) {
 	return (
 		<div className="w-full flex justify-center py-10">
 			<div className="w-full max-w-4xl flex flex-col gap-10">

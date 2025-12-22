@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import Paginator from "./_components/Pagination";
 import { DataTable } from "./_components/UserDataTable/data-table";
 import { columns } from "./_components/UserDataTable/columns";
+import AdminUserManafementPageLayout from "./_components/PageLayout";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -35,10 +36,12 @@ export default async function UserManagement({
 	if (error) {
 		console.error("[ADMIN:USER-MANAGEMENT]", error);
 		return (
-			<ExpectedError
-				message="Failed to fetch users"
-				link={{ text: "Back to admin home", href: "/admin" }}
-			/>
+			<AdminUserManafementPageLayout>
+				<ExpectedError
+					message="Failed to fetch users"
+					link={{ text: "Back to admin home", href: "/admin" }}
+				/>
+			</AdminUserManafementPageLayout>
 		);
 	}
 
@@ -49,18 +52,20 @@ export default async function UserManagement({
 	}
 
 	return (
-		<section className="relative w-full overflow-x-hidden">
-			<div>
-				<div className="container mx-auto pb-10 w-full min-h-[618px] h-[calc(100svh-280px)]">
-					<DataTable columns={columns} data={users} />
+		<AdminUserManafementPageLayout>
+			<section className="relative w-full overflow-x-hidden">
+				<div>
+					<div className="container mx-auto pb-10 w-full min-h-[618px] h-[calc(100svh-280px)]">
+						<DataTable columns={columns} data={users} />
+					</div>
+					<Paginator
+						count={total}
+						page={page}
+						itemsPerPage={PAGE_SIZE}
+						search={null}
+					/>
 				</div>
-				<Paginator
-					count={total}
-					page={page}
-					itemsPerPage={PAGE_SIZE}
-					search={null}
-				/>
-			</div>
-		</section>
+			</section>
+		</AdminUserManafementPageLayout>
 	);
 }
