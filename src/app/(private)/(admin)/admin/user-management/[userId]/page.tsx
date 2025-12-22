@@ -9,6 +9,7 @@ import { getUsersLinksWithScore } from "@/utils/admin/get-users-links-with-score
 import UserDetails from "./_components/UserDetails";
 import { isSuperAdmin } from "@/utils/admin/is-super-admin";
 import UserLinks from "./_components/UserLinks";
+import UserSubscription from "./_components/UserSubscription";
 
 type Props = {
 	params: Promise<{ userId: string }>;
@@ -68,10 +69,8 @@ export default async function AdminUserDetail({ params }: Props) {
 				isUserSuperAdmin={isUserSuperAdmin}
 				isMe={user.id === session.user.id}
 			/>
+			<UserSubscription subscriptionResult={subscription} userId={userId} />
 			<UserLinks linksResult={links} />
-			<div className="w-full xl:block hidden overflow-x-scroll">
-				<pre>{JSON.stringify(subscription, null, 2)}</pre>
-			</div>
 		</AdminUserPageLayout>
 	);
 }

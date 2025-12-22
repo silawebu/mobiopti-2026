@@ -256,3 +256,123 @@ export async function unbanUser(userId: string) {
 		error: null,
 	};
 }
+
+export async function grantFreeSubscription(userId: string) {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (!session) {
+		return { error: "Only authenticated users can access this feature" };
+	}
+
+	const {
+		user: { role },
+	} = session;
+
+	if (role !== "admin") {
+		return { error: "Only administrators can access this feature" };
+	}
+
+	const { data: user, error: userError } = await tryCatch(
+		prisma.user.findUniqueOrThrow({
+			where: { id: userId },
+			select: { id: true },
+		})
+	);
+
+	if (userError || !user) {
+		return { error: "Could not find user with provided ID" };
+	}
+
+	const existingSubscription = await prisma.subscription.findFirst({
+		where: { AND: [{ referenceId: user.id }, { status: "active" }] },
+	});
+
+	if (existingSubscription !== null) {
+		return { error: "This user already has an active subscription" };
+	}
+
+	const { error } = await tryCatch(
+		prisma.subscription.create({
+			data: {
+				id: `free-${user.id}`,
+				plan: "premium",
+				referenceId: user.id,
+				status: "active",
+			},
+		})
+	);
+
+	if (error) {
+		console.error(`[ADMIN:GRANTFREESUB-ACTION:${userId}]`, error);
+		return {
+			error: "Failed to grant user's free subscription",
+		};
+	}
+
+	revalidatePath(`/admin/user-management/${userId}`);
+
+	return {
+		error: null,
+	};
+}
+
+export async function revokeFreeSubscription(userId: string) {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	if (!session) {
+		return { error: "Only authenticated users can access this feature" };
+	}
+
+	const {
+		user: { role },
+	} = session;
+
+	if (role !== "admin") {
+		return { error: "Only administrators can access this feature" };
+	}
+
+	const { data: user, error: userError } = await tryCatch(
+		prisma.user.findUniqueOrThrow({
+			where: { id: userId },
+			select: { id: true },
+		})
+	);
+
+	if (userError || !user) {
+		return { error: "Could not find user with provided ID" };
+	}
+
+	const existingSubscription = await prisma.subscription.findUnique({
+		where: { id: `free-${user.id}` },
+	});
+
+	if (existingSubscription === null) {
+		return {
+			error:
+				"User does not have free subscription therefore it cannot be revoked. If you want to cancel his subscription please do it manually in Stripe - by clicking on Open in Stripe button bellow.",
+		};
+	}
+
+	const { error } = await tryCatch(
+		prisma.subscription.delete({
+			where: { id: `free-${user.id}` },
+		})
+	);
+
+	if (error) {
+		console.error(`[ADMIN:REVOKEFREESUB-ACTION:${userId}]`, error);
+		return {
+			error: "Failed to revoke user's free subscription",
+		};
+	}
+
+	revalidatePath(`/admin/user-management/${userId}`);
+
+	return {
+		error: null,
+	};
+}
