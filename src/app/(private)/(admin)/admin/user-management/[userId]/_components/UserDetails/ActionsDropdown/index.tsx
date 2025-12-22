@@ -12,19 +12,27 @@ import { useState } from "react";
 import MakeAdmin from "./MakeAdmin";
 import RemoveAdmin from "./RemoveAdmin";
 import BanUser from "./BanUser";
+import UnbanUser from "./UnbanUser";
 
 type Props = {
 	userId: string;
 	role: "admin" | "user";
 	isSuperAdmin: boolean;
+	banned: boolean;
 };
 
-export default function ActionsDropdown({ userId, role, isSuperAdmin }: Props) {
+export default function ActionsDropdown({
+	userId,
+	role,
+	isSuperAdmin,
+	banned,
+}: Props) {
 	const [open, setOpen] = useState<boolean>(false);
 
 	const [makeAdmin, setMakeAdmin] = useState<boolean>(false);
 	const [removeAdmin, setRemoveAdmin] = useState<boolean>(false);
 	const [ban, setBan] = useState<boolean>(false);
+	const [unban, setUnban] = useState<boolean>(false);
 
 	return (
 		<>
@@ -38,6 +46,7 @@ export default function ActionsDropdown({ userId, role, isSuperAdmin }: Props) {
 				<DropdownMenuContent>
 					{role === "user" && isSuperAdmin && (
 						<DropdownMenuItem
+							disabled={banned}
 							onSelect={(e) => {
 								e.preventDefault();
 								setMakeAdmin(true);
@@ -58,17 +67,30 @@ export default function ActionsDropdown({ userId, role, isSuperAdmin }: Props) {
 							Remove admin
 						</DropdownMenuItem>
 					)}
-					<DropdownMenuItem
-						onSelect={(e) => {
-							e.preventDefault();
-							setBan(true);
-						}}
-						variant="destructive"
-						disabled={role === "admin"}
-					>
-						<Ban />
-						Ban user
-					</DropdownMenuItem>
+					{banned ? (
+						<DropdownMenuItem
+							onSelect={(e) => {
+								e.preventDefault();
+								setUnban(true);
+							}}
+							variant="destructive"
+						>
+							<Ban />
+							Unban user
+						</DropdownMenuItem>
+					) : (
+						<DropdownMenuItem
+							onSelect={(e) => {
+								e.preventDefault();
+								setBan(true);
+							}}
+							variant="destructive"
+							disabled={role === "admin"}
+						>
+							<Ban />
+							Ban user
+						</DropdownMenuItem>
+					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
 
@@ -93,6 +115,14 @@ export default function ActionsDropdown({ userId, role, isSuperAdmin }: Props) {
 				open={ban}
 				onOpenChange={(open) => {
 					setBan(open);
+					if (!open) setOpen(false);
+				}}
+			/>
+			<UnbanUser
+				userId={userId}
+				open={unban}
+				onOpenChange={(open) => {
+					setUnban(open);
 					if (!open) setOpen(false);
 				}}
 			/>

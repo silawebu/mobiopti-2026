@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import clsx from "clsx";
 import ClientDate from "@/components/ClientDate";
 import ActionsDropdown from "./ActionsDropdown";
+import BannedBanner from "./BannedBanner";
+import { getInitials, isStillBanned } from "@/utils/admin/helper-functions";
 
 type Props = User & {
 	isMeSuperAdmin: boolean;
@@ -32,12 +34,15 @@ export default function UserDetails({
 	emailVerified,
 	createdAt,
 	role,
+	banned,
+	banReason,
+	banExpires,
 	isMeSuperAdmin,
 	isUserSuperAdmin,
 	isMe,
 }: Props) {
 	return (
-		<Card>
+		<Card className="border-2 border-double">
 			<CardHeader>
 				<CardTitle>User Details</CardTitle>
 				<CardDescription>
@@ -65,12 +70,20 @@ export default function UserDetails({
 							isSuperAdmin={isMeSuperAdmin}
 							userId={id}
 							role={role === "admin" ? "admin" : "user"}
+							banned={isStillBanned(banned ?? false, banExpires)}
 						/>
 					</CardAction>
 				)}
 			</CardHeader>
 			<CardContent>
 				<div className="flex flex-col gap-5">
+					{
+						<BannedBanner
+							banned={banned ?? false}
+							expiresIn={banExpires}
+							reason={banReason}
+						/>
+					}
 					<div className="relative w-full gap-2.5 flex items-center sm:gap-3">
 						<Avatar className="w-14 h-14 sm:w-16 sm:h-16">
 							{image && <AvatarImage className="object-cover" src={image} />}
@@ -131,10 +144,4 @@ export default function UserDetails({
 			</CardFooter>
 		</Card>
 	);
-}
-
-function getInitials(name: string): string {
-	if (!name || name == "") return "X";
-	const split = name.split(" ");
-	return `${split[0][0]}${split[1] ? split[1][0] : ""}`;
 }

@@ -4,6 +4,11 @@ import type { BanSchema } from "./_components/UserDetails/ActionsDropdown/BanUse
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import {
+	getSecondsMultiplier,
+	isStillBanned,
+	simpleDateFormat,
+} from "@/utils/admin/helper-functions";
 import { tryCatch } from "@/utils/try-catch";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -160,10 +165,12 @@ export async function banUser(values: BanSchema, userId: string) {
 		return { error: "You cannot ban other admins" };
 	}
 
-	if (user.banned) {
+	if (isStillBanned(user.banned ?? false, user.banExpires)) {
 		return {
-			error: `User is already banned. ${
-				user.banExpires && `Ban expires at ${simpleDateFormat(user.banExpires)}`
+			error: `User is already banned.${
+				user.banExpires
+					? ` Ban expires at ${simpleDateFormat(user.banExpires)}.`
+					: ""
 			}`,
 		};
 	}
@@ -191,30 +198,61 @@ export async function banUser(values: BanSchema, userId: string) {
 	};
 }
 
-function simpleDateFormat(date: Date): string {
-	const day = date.getDate();
-	const month = date.getMonth();
-	const year = date.getFullYear();
-	const hours = date.getHours();
+export async function unbanUser(userId: string) {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
-	let minutes: number | string = date.getMinutes();
-
-	if (minutes < 10) {
-		minutes = `0${minutes.toString()}`;
+	if (!session) {
+		return { error: "Only authenticated users can access this feature" };
 	}
 
-	return `${day}. ${month}. ${year} ${hours}:${minutes}`;
-}
+	const {
+		user: { id, role },
+	} = session;
 
-function getSecondsMultiplier(unit: BanSchema["expUnit"]): number {
-	switch (unit) {
-		case "minutes":
-			return 60;
-		case "hours":
-			return 3600;
-		case "days":
-			return 86400;
-		case "months":
-			return 2629744;
+	if (role !== "admin") {
+		return { error: "Only administrators can access this feature" };
 	}
+
+	if (userId === id) {
+		return { error: "You cannot unban yourself" };
+	}
+
+	const { data: user, error: userError } = await tryCatch(
+		prisma.user.findUniqueOrThrow({
+			where: { id: userId },
+			select: { role: true, id: true, banned: true, banExpires: true },
+		})
+	);
+
+	if (userError || !user) {
+		return { error: "Could not find user with provided ID" };
+	}
+
+	if (!isStillBanned(user.banned ?? false, user.banExpires)) {
+		return {
+			error: "User is not banned therefore you cannot unban him",
+		};
+	}
+
+	const { error } = await tryCatch(
+		auth.api.unbanUser({
+			body: {
+				userId: user.id,
+			},
+			headers: await headers(),
+		})
+	);
+
+	if (error) {
+		console.error(`[ADMIN:UNBAN-ACTION:${userId}]`, error);
+		return { error: "Failed to unban user" };
+	}
+
+	revalidatePath(`/admin/user-management/${userId}`);
+
+	return {
+		error: null,
+	};
 }
