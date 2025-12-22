@@ -100,19 +100,17 @@ export function NavUser({ user }: { user: User }) {
 							</Link>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem disabled={isLoading}>
-							<button
-								onClick={handleLogOut}
-								disabled={isLoading}
-								className="flex items-center gap-2 cursor-pointer"
-							>
-								{isLoading ? (
-									<Loader className="animate-spin w-5" />
-								) : (
-									<LogOut className="w-5" />
-								)}
-								Log Out
-							</button>
+						<DropdownMenuItem
+							className="flex items-center gap-2 cursor-pointer"
+							onClick={handleLogOut}
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<Loader className="animate-spin w-5" />
+							) : (
+								<LogOut className="w-5" />
+							)}
+							Log Out
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
