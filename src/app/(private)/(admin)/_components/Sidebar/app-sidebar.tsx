@@ -52,7 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<Link href="/">
+							<Link href="/admin">
 								<div className="bg-transparent rounded-sm text-sidebar-primary-foreground flex aspect-square size-7 items-center justify-center">
 									<BrandIcon className="w-full h-full relative bottom-px fill-primary" />
 								</div>

@@ -66,7 +66,7 @@ export function AppSidebar({
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<Link href="/">
+							<Link href="/dashboard">
 								<div className="bg-transparent rounded-sm text-sidebar-primary-foreground flex aspect-square size-7 items-center justify-center">
 									<BrandIcon className="w-full h-full relative bottom-px" />
 								</div>
