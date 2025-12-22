@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import AdminUserPageLayout from "./_components/PageLayout";
 import ExpectedError from "@/components/ExpectedError";
 import { getUsersLinksWithScore } from "@/utils/admin/get-users-links-with-score";
+import UserDetails from "./_components/UserDetails";
 
 type Props = {
 	params: Promise<{ userId: string }>;
@@ -56,11 +57,14 @@ export default async function AdminUserDetail({ params }: Props) {
 
 	return (
 		<AdminUserPageLayout>
-			<pre>{JSON.stringify(user, null, 2)}</pre>
-			<hr />
-			<pre>{JSON.stringify(subscription, null, 2)}</pre>
-			<hr />
-			<pre>{JSON.stringify(links, null, 2)}</pre>
+			<UserDetails {...user} />
+			<div className="w-full xl:block hidden overflow-x-scroll">
+				<pre>{JSON.stringify(user, null, 2)}</pre>
+				<hr />
+				<pre>{JSON.stringify(subscription, null, 2)}</pre>
+				<hr />
+				<pre>{JSON.stringify(links, null, 2)}</pre>
+			</div>
 		</AdminUserPageLayout>
 	);
 }
