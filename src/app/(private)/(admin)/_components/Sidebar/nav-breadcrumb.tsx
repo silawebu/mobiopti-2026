@@ -18,7 +18,11 @@ export type BreadcrumbSegment = {
 
 const UNCLICKABLE_SLUGS = [""];
 
+// CUID pattern (starts with 'c', 21-31 lowercase alphanumeric)
 const CUID_PATTERN = /^c[a-z0-9]{20,30}$/;
+
+// Generic ID pattern (32 alphanumeric characters - BetterAuth style)
+const GENERIC_ID_PATTERN = /^[a-zA-Z0-9]{32}$/;
 
 export default function SidebarBreadcrumb() {
 	const pathNames = getBreadcrumbSegments(usePathname(), UNCLICKABLE_SLUGS);
@@ -75,17 +79,22 @@ function isCuid(segment: string): boolean {
 	return CUID_PATTERN.test(segment);
 }
 
-function formatCuid(cuid: string): string {
-	const prefix = cuid.slice(0, 2).toUpperCase();
-	const suffix = cuid.slice(-2).toUpperCase();
+function isGenericId(segment: string): boolean {
+	return GENERIC_ID_PATTERN.test(segment);
+}
+
+function formatId(id: string): string {
+	const prefix = id.slice(0, 3);
+	const suffix = id.slice(-3);
 	return `${prefix}...${suffix}`;
 }
 
 function getPathName(pathSlug: string | undefined): string {
 	if (!pathSlug) return "";
 
-	if (isCuid(pathSlug)) {
-		return formatCuid(pathSlug);
+	// Check for CUID or generic 32-char ID
+	if (isCuid(pathSlug) || isGenericId(pathSlug)) {
+		return formatId(pathSlug);
 	}
 
 	switch (pathSlug) {
