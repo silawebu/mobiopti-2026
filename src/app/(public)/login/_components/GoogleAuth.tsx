@@ -40,7 +40,7 @@ export default function GoogleAuth({ loading, setLoading, redirectTo }: Props) {
 		<Button
 			onClick={handleGoogleAuth}
 			variant="outline"
-			className="w-full"
+			className="w-full text-lg gap-4 font-medium h-10 px-4"
 			size={"lg"}
 			disabled={loading}
 		>

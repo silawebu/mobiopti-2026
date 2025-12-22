@@ -6,7 +6,7 @@ type Props = {
 
 export default function FormCard({ children }: Props) {
 	return (
-		<Card>
+		<Card className="bg-card/50">
 			<CardHeader>
 				<CardTitle className="text-2xl text-center">
 					Welcome to MobiOpti
