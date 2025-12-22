@@ -26,7 +26,7 @@ export async function makeAdmin(userId: string) {
 		user: { id, role },
 	} = session;
 
-	if (role !== "admin" && id !== process.env.SUPERADMIN_USER_ID) {
+	if (role !== "admin" || id !== process.env.SUPERADMIN_USER_ID) {
 		return { error: "Only super administrators can access this feature" };
 	}
 
@@ -84,7 +84,7 @@ export async function removeAdmin(userId: string) {
 		user: { id, role },
 	} = session;
 
-	if (role !== "admin" && id !== process.env.SUPERADMIN_USER_ID) {
+	if (role !== "admin" || id !== process.env.SUPERADMIN_USER_ID) {
 		return { error: "Only super administrators can access this feature" };
 	}
 
