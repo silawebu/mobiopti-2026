@@ -15,18 +15,21 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { isStillBanned } from "@/utils/admin/helper-functions";
 
 export const columns: ColumnDef<UserData>[] = [
 	{
 		accessorKey: "email",
 		header: () => <div className="pl-7">Email</div>,
 		cell: ({ row }) => {
-			const { email, role, banned } = row.original;
+			const { email, role, banned, banExpires } = row.original;
 			return (
 				<div className="flex gap-1 items-center w-fit">
 					<div className="w-6 flex items-center justify-center shrink-0">
 						{role === "admin" && <ShieldHalf size={17} />}
-						{banned && <Ban className="text-destructive" size={17} />}
+						{isStillBanned(banned ?? false, banExpires) && (
+							<Ban className="text-destructive" size={17} />
+						)}
 					</div>
 					{email}
 				</div>

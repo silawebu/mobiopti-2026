@@ -13,6 +13,7 @@ export type UserData = {
 	name: string;
 	email: string;
 	banned: boolean | null;
+	banExpires: Date | null;
 	role: string | null;
 	subscription: SubscriptionStatus;
 };
@@ -29,7 +30,7 @@ export async function fetchUsersPage(page: number): Promise<PageResult> {
 
 	const [users, total] = await Promise.all([
 		prisma.user.findMany({
-			select: { id: true, name: true, email: true, banned: true, role: true },
+			select: { id: true, name: true, email: true, banned: true, role: true, banExpires: true },
 			skip,
 			take: PAGE_SIZE,
 			orderBy: { createdAt: "desc" },
