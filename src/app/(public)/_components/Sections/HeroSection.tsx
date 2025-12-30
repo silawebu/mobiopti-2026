@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { SendHorizonal } from "lucide-react";
+import HomeLinkInput from "../../tests/[[...link]]/_components/HomeLinkInput";
 
 export default function HeroSection() {
 	return (
@@ -42,15 +40,7 @@ export default function HeroSection() {
 					Our tools helps business owners an contractors to improve search
 					engine optimisation per page basis
 				</p>
-				<div className="mt-10 gap-2 flex flex-col items-start">
-					<p className="text-sm font-bold text-muted-foreground">Try it:</p>
-					<div className="flex items-center gap-2 w-full">
-						<Input placeholder="zsf.cz" />{" "}
-						<Button size={"icon"}>
-							<SendHorizonal />
-						</Button>
-					</div>
-				</div>
+				<HomeLinkInput />
 			</div>
 		</section>
 	);
