@@ -6,6 +6,9 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { getIp } from "@/utils/get-ip";
 import { validateLink } from "@/utils/url/validator";
+import axios, { type AxiosResponse } from "axios";
+import { fetchPage } from "@/utils/url/fetcher";
+import { ERROR_MESSAGES } from "@/utils/url/error-messages";
 
 const rateLimit = new Ratelimit({
 	redis: Redis.fromEnv(),
@@ -45,6 +48,33 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 	}
 
 	const { url } = validate;
+
+	let urlRequest: AxiosResponse;
+
+	try {
+		urlRequest = await fetchPage(url);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			const key = err.code ?? err.response?.status?.toString();
+			const message = ERROR_MESSAGES[key ?? ""] ?? ERROR_MESSAGES.default;
+			return { redirect: null, error: message };
+		}
+		return { redirect: null, error: ERROR_MESSAGES.default };
+	}
+
+	if (!urlRequest?.data || !urlRequest.request.res.responseUrl) {
+		return {
+			redirect: null,
+			error: "Failed to retrieve link data",
+		};
+	}
+
+	const finalUrl: string = urlRequest.request.res.responseUrl;
+	const html: string = urlRequest.data;
+
+	// TODO: Save to database and run tests
+
+	console.log(finalUrl);
 
 	return {
 		redirect: "/test/zsf.cz/kontakt",
