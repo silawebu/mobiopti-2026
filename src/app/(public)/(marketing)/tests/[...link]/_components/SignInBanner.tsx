@@ -19,7 +19,9 @@ export default function SignInBanner({ actualUrl }: Props) {
 				<div className="absolute w-full top-[10%] z-30 px-[7.5%]">
 					<div className="flex flex-col lg:flex-row items-center justify-between bg-card p-5 border rounded-lg gap-4 sm:gap-6">
 						<div className="text-center lg:text-left">
-							<h3 className="font-bold text-base sm:text-lg">Start using MobiOpti</h3>
+							<h3 className="font-bold text-base sm:text-lg">
+								Start using MobiOpti
+							</h3>
 							<p className="text-sm sm:text-base lg:text-sm">
 								Sign in to start tracking your per-page SEO
 							</p>
@@ -27,7 +29,9 @@ export default function SignInBanner({ actualUrl }: Props) {
 						<GoogleAuth
 							loading={loading}
 							setLoading={setLoading}
-							redirectTo={`/dashboard/links?add=${actualUrl}`}
+							redirectTo={`/dashboard/links?add=${encodeURIComponent(
+								actualUrl
+							)}`}
 							className="w-full max-w-[400px] lg:w-fit"
 						/>
 					</div>
