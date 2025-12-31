@@ -51,7 +51,7 @@ export async function getPublicTests(
 			severity: true,
 			description: true,
 			title: true,
-			urlTests: {
+			publicUrlTests: {
 				where: { urlId: linkId },
 				orderBy: { createdAt: "desc" },
 				take: 1,
@@ -63,8 +63,8 @@ export async function getPublicTests(
 		},
 	});
 
-	return tests.map(({ urlTests, ...test }) => ({
+	return tests.map(({ publicUrlTests, ...test }) => ({
 		...test,
-		lastRun: urlTests[0] ?? null,
+		lastRun: publicUrlTests[0] ?? null,
 	}));
 }
