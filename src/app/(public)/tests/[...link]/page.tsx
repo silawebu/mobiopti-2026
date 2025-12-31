@@ -9,6 +9,7 @@ import {
 import { tryCatch } from "@/utils/try-catch";
 import { notFound } from "next/navigation";
 import Details from "./_components/Details";
+import SignInBanner from "./_components/SignInBanner";
 
 type Props = {
 	params: Promise<{ link: string[] }>;
@@ -51,12 +52,10 @@ export default async function PublicTestPage({ params }: Props) {
 			/>
 			<ResultMatrix matrixResult={matrixResult} linkId={link.id} />
 			<TestsView
+				view={"public"}
 				testsResult={testsResult}
-				subscription={{
-					description: null,
-					isSubscribed: true,
-					linkId: link.id,
-				}}
+				bottom={<SignInBanner actualUrl={link.actualUrl} />}
+				linkId=""
 			/>
 		</div>
 	);

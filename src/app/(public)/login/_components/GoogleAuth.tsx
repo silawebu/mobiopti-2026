@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient, getErrorMessage } from "@/lib/auth-client";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -10,9 +11,15 @@ type Props = {
 	loading: boolean;
 	setLoading: (state: boolean) => void;
 	redirectTo: string | null;
+	className?: string;
 };
 
-export default function GoogleAuth({ loading, setLoading, redirectTo }: Props) {
+export default function GoogleAuth({
+	loading,
+	setLoading,
+	redirectTo,
+	className = "",
+}: Props) {
 	const router = useRouter();
 
 	const handleGoogleAuth = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,7 +47,7 @@ export default function GoogleAuth({ loading, setLoading, redirectTo }: Props) {
 		<Button
 			onClick={handleGoogleAuth}
 			variant="outline"
-			className="w-full text-lg gap-4 font-medium h-10 px-4"
+			className={clsx("w-full text-lg gap-4 font-medium h-10 px-4", className)}
 			size={"lg"}
 			disabled={loading}
 		>
