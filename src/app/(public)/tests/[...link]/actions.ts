@@ -1,6 +1,5 @@
 "use server";
 
-import { Prisma } from "@/generated/prisma/client";
 import * as z from "zod";
 import { linkSchema } from "./_components/HomeLinkInput";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -55,8 +54,6 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 
 	const { url } = validate;
 
-	let html: null | string = null;
-
 	let urlRequest: AxiosResponse;
 
 	try {
@@ -79,72 +76,46 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 
 	const actualUrl: string = urlRequest.request.res.responseUrl;
 	const link = actualUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
+	const html = urlRequest.data;
 
-	const exists = await tryCatch(
-		prisma.publicUrl.findFirst({
-			where: {
-				link: link,
-			},
+	const { data: urlRecord, error: urlError } = await tryCatch(
+		prisma.publicUrl.upsert({
+			where: { actualUrl_link: { actualUrl, link } },
+			create: { actualUrl, link, ip },
+			update: {},
 			select: {
 				id: true,
 				link: true,
-				updatedAt: true,
+				publicUrlTests: {
+					select: { createdAt: true },
+					orderBy: { createdAt: "desc" },
+					take: 1,
+				},
 			},
 		})
 	);
 
-	if (exists.error) {
+	if (urlError || !urlRecord) {
+		console.error(urlError);
 		return {
 			redirect: null,
-			error: "Failed to check if this link already exists",
+			error: "Failed to process link in the database",
 		};
 	}
 
-	if (exists.data && exists.data.updatedAt) {
-		const daysSinceUpdate =
-			(Date.now() - exists.data.updatedAt.getTime()) / (1000 * 60 * 60 * 24);
-		if (daysSinceUpdate < REFRESH_EXISTING_AFTER_DAYS) {
+	const urlId = urlRecord.id;
+	const hasExistingTests = urlRecord.publicUrlTests.length > 0;
+
+	if (hasExistingTests) {
+		const latestTestDate = urlRecord.publicUrlTests[0].createdAt;
+		const daysSinceLatestTest =
+			(Date.now() - latestTestDate.getTime()) / (1000 * 60 * 60 * 24);
+		if (daysSinceLatestTest < REFRESH_EXISTING_AFTER_DAYS) {
 			return {
-				redirect: `/tests/${exists.data.link}?warning=old-results`,
+				redirect: `/tests/${urlRecord.link}?info=recent`,
 				error: null,
 			};
 		}
-	}
-
-	html = urlRequest.data;
-
-	if (!html) {
-		return {
-			redirect: null,
-			error: "Could not load the website's content",
-		};
-	}
-
-	let urlId: string | null = null;
-
-	if (exists.data) {
-		urlId = exists.data.id;
-	} else {
-		const { data: newUrl, error: newUrlError } = await tryCatch(
-			prisma.publicUrl.create({
-				data: {
-					actualUrl: actualUrl,
-					link: link,
-					ip: ip,
-				},
-				select: { id: true },
-			})
-		);
-
-		if (!newUrl || newUrlError) {
-			console.error(newUrlError);
-			return {
-				redirect: null,
-				error: "Failed to add new link to the database",
-			};
-		}
-
-		urlId = newUrl.id;
 	}
 
 	const { data: tests, error: testsErr } = await tryCatch(
@@ -153,7 +124,14 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 
 	if (testsErr) {
 		return {
-			redirect: `/tests/${link}?warning=tests-failed`,
+			redirect: `/tests/${link}?error=tests-failed`,
+			error: null,
+		};
+	}
+
+	if (!tests || tests.length === 0) {
+		return {
+			redirect: `/tests/${link}?error=no-tests`,
 			error: null,
 		};
 	}
@@ -162,21 +140,21 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 		calculateScore(tests)
 	);
 
-	await prisma.publicUrl.update({
-		data: { score: scoreError ? 0 : score ?? null },
-		where: {
-			id: urlId,
-		},
-	});
-
 	const { error: insertError } = await tryCatch(
-		prisma.publicUrlTest.createMany({ data: tests })
+		prisma.$transaction([
+			prisma.publicUrl.update({
+				data: { score: scoreError ? 0 : score ?? null },
+				where: { id: urlId },
+			}),
+			prisma.publicUrlTest.deleteMany({ where: { urlId } }),
+			prisma.publicUrlTest.createMany({ data: tests }),
+		])
 	);
 
 	if (insertError) {
 		console.error(insertError);
 		return {
-			redirect: `/tests/${link}?warning=tests-failed-to-insert`,
+			redirect: `/tests/${link}?error=failed-to-insert`,
 			error: null,
 		};
 	}
