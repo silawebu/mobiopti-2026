@@ -130,6 +130,7 @@ model Test {
   maxPoints   Int
   severity    Int
   urlTests    UrlTest[]
+  publicUrlTests    PublicUrlTest[]
 
   @@map("test")
 }
@@ -161,4 +162,36 @@ model UrlTest {
   @@index([urlId])
   @@index([testId])
   @@map("url_test")
+}
+
+model PublicUrl {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  actualUrl String
+  link      String
+  publicUrlTests  PublicUrlTest[]
+  score     Int @default(0)
+  ip        String?
+
+  @@unique([actualUrl, link])
+  @@index([link])
+  @@index([ip])
+  @@map("public_url")
+}
+
+model PublicUrlTest {
+  createdAt DateTime
+  urlId     String
+  url       PublicUrl           @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  testId    String
+  test      Test          @relation(fields: [testId], references: [id])
+  status    UrlTestStatus
+  message   String?
+  content   String?
+
+  @@id([createdAt, urlId, testId])
+  @@index([urlId])
+  @@index([testId])
+  @@map("public_url_test")
 }
