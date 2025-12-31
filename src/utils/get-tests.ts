@@ -41,3 +41,30 @@ export async function getTests(
 		lastRun: urlTests[0] ?? null,
 	}));
 }
+
+export async function getPublicTests(
+	linkId: string
+): Promise<TestWithLastRun[]> {
+	const tests = await prisma.test.findMany({
+		where: { isPaid: false },
+		select: {
+			severity: true,
+			description: true,
+			title: true,
+			urlTests: {
+				where: { urlId: linkId },
+				orderBy: { createdAt: "desc" },
+				take: 1,
+				select: {
+					status: true,
+					content: true,
+				},
+			},
+		},
+	});
+
+	return tests.map(({ urlTests, ...test }) => ({
+		...test,
+		lastRun: urlTests[0] ?? null,
+	}));
+}

@@ -58,3 +58,42 @@ export async function getResultMatrix(linkId: string): Promise<Matrix> {
 
 	return Array.from(rowsByCategory.values());
 }
+
+export async function getPublicResultMatrix(linkId: string): Promise<Matrix> {
+	const [categories, urlTests] = await Promise.all([
+		prisma.testCategory.findMany({
+			select: { name: true },
+		}),
+		prisma.publicUrlTest.findMany({
+			where: { urlId: linkId },
+			select: {
+				status: true,
+				test: {
+					select: {
+						severity: true,
+						category: {
+							select: { name: true },
+						},
+					},
+				},
+			},
+		}),
+	]);
+
+	const rowsByCategory = new Map<string, Matrix[number]>(
+		categories.map((c) => [
+			c.name,
+			{ name: c.name, severities: blankCounters() },
+		])
+	);
+
+	for (const { status, test } of urlTests) {
+		const severity = test.severity as Severity;
+		const row = rowsByCategory.get(test.category.name);
+		if (row) {
+			row.severities[severity][status]++;
+		}
+	}
+
+	return Array.from(rowsByCategory.values());
+}
