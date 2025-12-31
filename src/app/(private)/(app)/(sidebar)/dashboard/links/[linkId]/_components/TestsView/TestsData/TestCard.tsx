@@ -9,6 +9,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { parseContentLinks } from "@/lib/tests/parse-content-links";
 import clsx from "clsx";
 import { BadgeAlert, BadgeCheck, BadgeX, Bot } from "lucide-react";
 
@@ -73,7 +74,7 @@ export default function TestCard({
 				<div className="mt-3">
 					<p className="text-xs pb-1 font-bold">Page scan result:</p>
 					<p className="border bg-card rounded text-sm py-1 px-3 font-mono wrap-break-word whitespace-pre-wrap">
-						{lastRun.content?.replace(/\\n/g, "\n")}
+						<ContentRenderer content={lastRun.content} />
 					</p>
 				</div>
 			)}
@@ -117,4 +118,28 @@ export function StatusBadge({ status }: { status: UrlTestStatus }) {
 		default:
 			return null;
 	}
+}
+
+function ContentRenderer({ content }: { content: string }) {
+	const segments = parseContentLinks(content.replace(/\\n/g, "\n"));
+
+	return (
+		<>
+			{segments.map((segment, index) =>
+				segment.type === "link" ? (
+					<a
+						key={index}
+						href={segment.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-blue-600 dark:hover:text-blue-400 underline hover:text-blue-800 dark:text-blue-300 transition-colors"
+					>
+						{segment.value}
+					</a>
+				) : (
+					<span key={index}>{segment.value}</span>
+				)
+			)}
+		</>
+	);
 }
