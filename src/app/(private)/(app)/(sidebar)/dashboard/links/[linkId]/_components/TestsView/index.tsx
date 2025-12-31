@@ -1,6 +1,6 @@
 import type { TestWithLastRun } from "@/utils/get-tests";
 import TestsError from "./TestsError";
-import TestsData, { SubscriptionSettings } from "./TestsData";
+import TestsData from "./TestsData";
 import TestsLayout from "./TestsLayout";
 
 type TestsResult =
@@ -8,11 +8,18 @@ type TestsResult =
 	| { data: null; error: Error };
 
 type Props = {
+	view: "public" | "private";
 	testsResult: TestsResult;
-	subscription: SubscriptionSettings;
+	linkId: string;
+	bottom?: React.ReactNode;
 };
 
-export default function TestsView({ testsResult, subscription }: Props) {
+export default function TestsView({
+	testsResult,
+	linkId,
+	bottom,
+	view,
+}: Props) {
 	const { data: tests, error } = testsResult;
 
 	if (error) {
@@ -25,7 +32,7 @@ export default function TestsView({ testsResult, subscription }: Props) {
 
 	return (
 		<TestsLayout>
-			<TestsData tests={tests} subscription={subscription} />
+			<TestsData tests={tests} linkId={linkId} bottom={bottom} view={view} />
 		</TestsLayout>
 	);
 }

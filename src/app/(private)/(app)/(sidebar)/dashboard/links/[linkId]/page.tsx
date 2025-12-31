@@ -11,6 +11,7 @@ import ResultMatrix from "./_components/ResultMatrix";
 import { getResultMatrix, type Matrix } from "@/utils/get-result-matrix";
 import { getTests } from "@/utils/get-tests";
 import TestsView from "./_components/TestsView";
+import SubscribeToSeeAllTests from "./_components/TestsView/SubscribeToSeeAllTests";
 
 export const dynamic = "force-dynamic";
 
@@ -76,8 +77,14 @@ export default async function LinkDetailPage({ params }: Props) {
 			<Details {...link} score={score} linkId={linkId} />
 			<ResultMatrix matrixResult={matrixResult} linkId={linkId} />
 			<TestsView
+				view="private"
 				testsResult={testsResult}
-				subscription={{ isSubscribed, linkId, description }}
+				bottom={
+					isSubscribed ? (
+						<SubscribeToSeeAllTests linkId={linkId} description={description} />
+					) : null
+				}
+				linkId={linkId}
 			/>
 		</div>
 	);

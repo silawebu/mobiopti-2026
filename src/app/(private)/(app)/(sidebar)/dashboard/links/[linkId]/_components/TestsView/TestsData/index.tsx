@@ -1,23 +1,15 @@
 import type { TestWithLastRun } from "@/utils/get-tests";
 import TestCard from "./TestCard";
 import RunTestsButton from "../../RunTestsButton";
-import SubscribeToSeeAllTests from "../SubscribeToSeeAllTests";
-
-export type SubscriptionSettings = {
-	isSubscribed: boolean;
-	linkId: string;
-	description: string | null;
-};
 
 type Props = {
 	tests: TestWithLastRun[];
-	subscription: SubscriptionSettings;
+	bottom?: React.ReactNode;
+	linkId: string;
+	view: "public" | "private";
 };
 
-export default function TestsData({
-	tests,
-	subscription: { isSubscribed, linkId, description },
-}: Props) {
+export default function TestsData({ tests, bottom, linkId, view }: Props) {
 	return (
 		<div className="w-full flex justify-center">
 			{tests.length > 0 ? (
@@ -25,17 +17,14 @@ export default function TestsData({
 					{tests.map((test: TestWithLastRun, index: number) => (
 						<TestCard key={index} {...test} />
 					))}
-
-					{!isSubscribed && (
-						<SubscribeToSeeAllTests linkId={linkId} description={description} />
-					)}
+					{bottom}
 				</div>
 			) : (
 				<div className="flex flex-col gap-3 items-center justify-center text-center">
 					<span className="text-muted-foreground">
 						No tests have been done for this link yet...
 					</span>
-					<RunTestsButton linkId={linkId} />
+					{view === "private" && <RunTestsButton linkId={linkId} />}
 				</div>
 			)}
 		</div>
