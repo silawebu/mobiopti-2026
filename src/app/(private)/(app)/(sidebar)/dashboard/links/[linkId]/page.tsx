@@ -80,7 +80,7 @@ export default async function LinkDetailPage({ params }: Props) {
 				view="private"
 				testsResult={testsResult}
 				bottom={
-					isSubscribed ? (
+					!isSubscribed ? (
 						<SubscribeToSeeAllTests linkId={linkId} description={description} />
 					) : null
 				}
