@@ -1,9 +1,12 @@
+import ResultMatrix from "@/app/(private)/(app)/(sidebar)/dashboard/links/[linkId]/_components/ResultMatrix";
+import TestsView from "@/app/(private)/(app)/(sidebar)/dashboard/links/[linkId]/_components/TestsView";
 import ExpectedError from "@/components/ExpectedError";
 import prisma from "@/lib/prisma";
 import { getPublicResultMatrix, type Matrix } from "@/utils/get-result-matrix";
 import { getPublicTests } from "@/utils/get-tests";
 import { tryCatch } from "@/utils/try-catch";
 import { notFound } from "next/navigation";
+import Details from "./_components/Details";
 
 type Props = {
 	params: Promise<{ link: string[] }>;
@@ -15,7 +18,17 @@ export default async function PublicTestPage({ params }: Props) {
 	const request = await tryCatch(
 		prisma.publicUrl.findFirst({
 			where: { link: linkParam },
-			select: { id: true, createdAt: true, actualUrl: true },
+			select: {
+				id: true,
+				createdAt: true,
+				actualUrl: true,
+				score: true,
+				publicUrlTests: {
+					select: { createdAt: true },
+					orderBy: { createdAt: "desc" },
+					take: 1,
+				},
+			},
 		})
 	);
 
@@ -41,12 +54,23 @@ export default async function PublicTestPage({ params }: Props) {
 	]);
 
 	return (
-		<div>
-			<pre>{JSON.stringify(link, null, 2)}</pre>
-			<hr />
-			<pre>{JSON.stringify(matrixResult, null, 2)}</pre>
-			<hr />
-			<pre>{JSON.stringify(testsResult, null, 2)}</pre>
+		<div className="flex flex-col gap-5">
+			<Details
+				url={link.actualUrl}
+				createdAt={link.createdAt}
+				score={link.score}
+				linkId={link.id}
+				lastTestRun={link.publicUrlTests[0].createdAt ?? null}
+			/>
+			<ResultMatrix matrixResult={matrixResult} linkId={link.id} />
+			<TestsView
+				testsResult={testsResult}
+				subscription={{
+					description: null,
+					isSubscribed: true,
+					linkId: link.id,
+				}}
+			/>
 		</div>
 	);
 }
