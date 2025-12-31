@@ -72,8 +72,8 @@ export default function TestCard({
 			{lastRun && lastRun.content && (
 				<div className="mt-3">
 					<p className="text-xs pb-1 font-bold">Page scan result:</p>
-					<p className="border bg-card rounded text-sm py-1 px-3 font-mono wrap-break-word">
-						{lastRun.content}
+					<p className="border bg-card rounded text-sm py-1 px-3 font-mono wrap-break-word whitespace-pre-wrap">
+						{lastRun.content?.replace(/\\n/g, "\n")}
 					</p>
 				</div>
 			)}
