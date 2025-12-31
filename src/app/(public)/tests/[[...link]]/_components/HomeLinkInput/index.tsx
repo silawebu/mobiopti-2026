@@ -48,21 +48,28 @@ export default function HomeLinkInput() {
 	});
 
 	async function onSubmit(data: z.infer<typeof linkSchema>) {
-		console.log(data);
-
 		setLoading(true);
 
-		const [result] = await Promise.all([
-			executePublicTests(data),
-			new Promise((resolve) => setTimeout(resolve, LOADING_DURATION)),
-		]);
+		const startTime = Date.now();
 
+		const result = await executePublicTests(data);
 		const { redirect: redirectUrl, error } = result;
 
 		if (error) {
 			toast.error(error);
 			setLoading(false);
-		} else if (redirectUrl) {
+			return;
+		}
+
+		const elapsed = Date.now() - startTime;
+
+		const remaining = LOADING_DURATION - elapsed;
+
+		if (remaining > 0) {
+			await new Promise((resolve) => setTimeout(resolve, remaining));
+		}
+
+		if (redirectUrl) {
 			router.push(redirectUrl);
 		} else {
 			toast.error("Something went wrong. Try again later!");
