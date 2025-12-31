@@ -52,7 +52,9 @@ export default function Details({
 				</div>
 				<div className="text-right">
 					<p className="text-xs">Last test run</p>
-					<b className="text-sm">{lastTestRun ? <ClientDate date={lastTestRun} /> : "-"}</b>
+					<b className="text-sm">
+						{lastTestRun ? <ClientDate date={lastTestRun} /> : "-"}
+					</b>
 				</div>
 			</div>
 		</section>

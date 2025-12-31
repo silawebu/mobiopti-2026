@@ -12,6 +12,7 @@ import { ERROR_MESSAGES } from "@/utils/url/error-messages";
 import { tryCatch } from "@/utils/try-catch";
 import prisma from "@/lib/prisma";
 import { calculateScore, evaluateTests } from "@/lib/tests";
+import { revalidateTag } from "next/cache";
 
 const REFRESH_EXISTING_AFTER_DAYS = 3;
 
@@ -158,6 +159,9 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 			error: null,
 		};
 	}
+
+	// Invalidate the cache for this link so fresh data is fetched
+	revalidateTag(`public-test:${link}`, "max");
 
 	return {
 		redirect: `/tests/${link}`,

@@ -1,9 +1,11 @@
 import ResultMatrix from "@/app/(private)/(app)/(sidebar)/dashboard/links/[linkId]/_components/ResultMatrix";
 import TestsView from "@/app/(private)/(app)/(sidebar)/dashboard/links/[linkId]/_components/TestsView";
 import ExpectedError from "@/components/ExpectedError";
-import prisma from "@/lib/prisma";
-import { getPublicResultMatrix, type Matrix } from "@/utils/get-result-matrix";
-import { getPublicTests } from "@/utils/get-tests";
+import {
+	getCachedPublicUrl,
+	getCachedResultMatrix,
+	getCachedTests,
+} from "@/lib/cache/public-tests";
 import { tryCatch } from "@/utils/try-catch";
 import { notFound } from "next/navigation";
 import Details from "./_components/Details";
@@ -15,22 +17,7 @@ type Props = {
 export default async function PublicTestPage({ params }: Props) {
 	const linkParam = (await params).link.join("/");
 
-	const request = await tryCatch(
-		prisma.publicUrl.findFirst({
-			where: { link: linkParam },
-			select: {
-				id: true,
-				createdAt: true,
-				actualUrl: true,
-				score: true,
-				publicUrlTests: {
-					select: { createdAt: true },
-					orderBy: { createdAt: "desc" },
-					take: 1,
-				},
-			},
-		})
-	);
+	const request = await tryCatch(getCachedPublicUrl(linkParam));
 
 	if (request.error) {
 		console.error(request.error);
@@ -49,8 +36,8 @@ export default async function PublicTestPage({ params }: Props) {
 	}
 
 	const [matrixResult, testsResult] = await Promise.all([
-		tryCatch(getPublicResultMatrix(link.id)),
-		tryCatch(getPublicTests(link.id)),
+		tryCatch(getCachedResultMatrix(link.id, linkParam)),
+		tryCatch(getCachedTests(link.id, linkParam)),
 	]);
 
 	return (
