@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@/generated/prisma/client";
 import * as z from "zod";
 import { linkSchema } from "./_components/HomeLinkInput";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -9,6 +10,11 @@ import { validateLink } from "@/utils/url/validator";
 import axios, { type AxiosResponse } from "axios";
 import { fetchPage } from "@/utils/url/fetcher";
 import { ERROR_MESSAGES } from "@/utils/url/error-messages";
+import { tryCatch } from "@/utils/try-catch";
+import prisma from "@/lib/prisma";
+import { calculateScore, evaluateTests } from "@/lib/tests";
+
+const REFRESH_EXISTING_AFTER_DAYS = 3;
 
 const rateLimit = new Ratelimit({
 	redis: Redis.fromEnv(),
@@ -49,6 +55,8 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 
 	const { url } = validate;
 
+	let html: null | string = null;
+
 	let urlRequest: AxiosResponse;
 
 	try {
@@ -69,15 +77,112 @@ export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 		};
 	}
 
-	const finalUrl: string = urlRequest.request.res.responseUrl;
-	const html: string = urlRequest.data;
+	const actualUrl: string = urlRequest.request.res.responseUrl;
+	const link = actualUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-	// TODO: Save to database and run tests
+	const exists = await tryCatch(
+		prisma.publicUrl.findFirst({
+			where: {
+				link: link,
+			},
+			select: {
+				id: true,
+				link: true,
+				updatedAt: true,
+			},
+		})
+	);
 
-	console.log(finalUrl);
+	if (exists.error) {
+		return {
+			redirect: null,
+			error: "Failed to check if this link already exists",
+		};
+	}
+
+	if (exists.data && exists.data.updatedAt) {
+		const daysSinceUpdate =
+			(Date.now() - exists.data.updatedAt.getTime()) / (1000 * 60 * 60 * 24);
+		if (daysSinceUpdate < REFRESH_EXISTING_AFTER_DAYS) {
+			return {
+				redirect: `/tests/${exists.data.link}?warning=old-results`,
+				error: null,
+			};
+		}
+	}
+
+	html = urlRequest.data;
+
+	if (!html) {
+		return {
+			redirect: null,
+			error: "Could not load the website's content",
+		};
+	}
+
+	let urlId: string | null = null;
+
+	if (exists.data) {
+		urlId = exists.data.id;
+	} else {
+		const { data: newUrl, error: newUrlError } = await tryCatch(
+			prisma.publicUrl.create({
+				data: {
+					actualUrl: actualUrl,
+					link: link,
+					ip: ip,
+				},
+				select: { id: true },
+			})
+		);
+
+		if (!newUrl || newUrlError) {
+			console.error(newUrlError);
+			return {
+				redirect: null,
+				error: "Failed to add new link to the database",
+			};
+		}
+
+		urlId = newUrl.id;
+	}
+
+	const { data: tests, error: testsErr } = await tryCatch(
+		evaluateTests(html, urlId)
+	);
+
+	if (testsErr) {
+		return {
+			redirect: `/tests/${link}?warning=tests-failed`,
+			error: null,
+		};
+	}
+
+	const { data: score, error: scoreError } = await tryCatch(
+		calculateScore(tests)
+	);
+
+	await prisma.publicUrl.update({
+		data: { score: scoreError ? 0 : score ?? null },
+		where: {
+			id: urlId,
+		},
+	});
+
+	const { error: insertError } = await tryCatch(
+		prisma.publicUrlTest.createMany({ data: tests })
+	);
+
+	if (insertError) {
+		console.error(insertError);
+		return {
+			redirect: `/tests/${link}?warning=tests-failed-to-insert`,
+			error: null,
+		};
+	}
 
 	return {
-		redirect: "/test/zsf.cz/kontakt",
+		redirect: `/tests/${link}`,
 		error: null,
 	};
 }
