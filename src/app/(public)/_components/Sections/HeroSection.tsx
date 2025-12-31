@@ -1,4 +1,4 @@
-import HomeLinkInput from "../../tests/[[...link]]/_components/HomeLinkInput";
+import HomeLinkInput from "../../tests/[...link]/_components/HomeLinkInput";
 
 export default function HeroSection() {
 	return (
