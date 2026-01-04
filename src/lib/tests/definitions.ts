@@ -175,6 +175,26 @@ export const testDefinitions: TestDefinition[] = [
 		},
 	},
 	{
+		id: "h1-length",
+		evaluate: ($) => {
+			const h1 = $("h1").first().text().trim();
+			const length = h1.length;
+
+			let status: UrlTestStatus;
+
+			if (!h1) status = "critical";
+			else if (length < 10 || length > 70) status = "warning";
+			else status = "ok";
+
+			return {
+				status,
+				message: null,
+				content: h1 ? `Lenght: ${length}\n\n${h1}` : "Lenght: 0",
+			};
+		},
+	},
+
+	{
 		id: "h2-presence",
 		evaluate: ($) => {
 			const count = $("h2").length;
