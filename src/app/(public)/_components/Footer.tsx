@@ -35,8 +35,12 @@ export default function Footer() {
 					</div>
 				</div>
 				<p className="text-xs md:text-sm text-muted-foreground text-center py-2">
-					Copyright 2025 © <a href="https://www.martinsil.cz">Martin Šíl</a>.
-					All Right Reserved.
+					Copyright 2025 ©{" "}
+					<a href="https://www.martinsil.cz" target="_blank">
+						Martin Šíl
+					</a>
+					. All Right Reserved. <a href="/privacy">Privacy policy</a>{" "}
+					<a href="/terms">Terms</a> <a href="/cookies">Cookies</a>
 				</p>
 			</div>
 		</footer>
