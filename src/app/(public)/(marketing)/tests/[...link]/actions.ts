@@ -22,6 +22,8 @@ const rateLimit = new Ratelimit({
 	prefix: "mobiopti",
 });
 
+// TO-DO: Second ratelimiter for executing new 3x in 24 hours
+
 export async function executePublicTests(values: z.infer<typeof linkSchema>) {
 	const isDev = process.env.NODE_ENV === "development";
 
