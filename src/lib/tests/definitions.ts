@@ -193,18 +193,27 @@ export const testDefinitions: TestDefinition[] = [
 			};
 		},
 	},
-
 	{
 		id: "h2-presence",
 		evaluate: ($) => {
-			const count = $("h2").length;
+			const h2Elements = $("h2");
+			const count = h2Elements.length;
+
+			const h2Texts = h2Elements
+				.map((_, el) => $(el).text().trim())
+				.get()
+				.filter(Boolean);
+
+			const hasH2 = count > 0;
+
 			return {
-				status: count >= 1 ? "ok" : "warning",
-				message:
-					count >= 1
-						? `${count} <h2> tag(s) found.`
-						: "No <h2> tags were found on the page.",
-				content: count.toString(),
+				status: hasH2 ? "ok" : "warning",
+				message: hasH2
+					? `${count} <h2> tag(s) found.`
+					: "No <h2> tags were found on the page.",
+				content: hasH2
+					? `H2: ${count}\n\n${h2Texts.join("\n")}`
+					: "No H2 headings were found on this page.",
 			};
 		},
 	},
